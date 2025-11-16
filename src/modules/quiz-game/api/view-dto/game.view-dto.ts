@@ -63,13 +63,13 @@ export class GameViewDto {
             score: secondPlayer.score,
           }
         : null,
-      questions: game.gameQuestions.map((gq) => ({
+      questions: (game.gameQuestions ?? []).map((gq) => ({
         id: gq.question.id,
         body: gq.question.body,
       })),
       status: game.status,
       startGameDate: (game.startGameDate as Date)?.toISOString() ?? null,
-      finishGameDate: (game.finishGameDate as Date)?.toISOString() ?? null
+      finishGameDate: (game.finishGameDate as Date)?.toISOString() ?? null,
     };
   }
 }

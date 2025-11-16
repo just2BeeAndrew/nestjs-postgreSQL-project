@@ -6,6 +6,7 @@ import { Game, GameStatus } from '../../domain/entity/game.entity';
 import { Player } from '../../domain/entity/player.entity';
 import { PlayerRepository } from '../../infrastructure/player.repository';
 import { QuestionRepository } from '../../infrastructure/question.repository';
+import { GameQuestion } from '../../domain/entity/game-question.entity';
 
 export class ConnectionCommand {
   constructor(public userId: string) {}
@@ -23,7 +24,7 @@ export class ConnectionUseCase implements ICommandHandler<ConnectionCommand> {
   async execute({ userId }: ConnectionCommand) {
     const isActivePlayer = await this.playersRepository.isActivePlayer(userId);
     if (isActivePlayer) {
-      throw DomainExceptionFactory.forbidden()
+      throw DomainExceptionFactory.forbidden();
     }
     //нашёл пользователя для создания связи
     const user = await this.usersRepository.findById(userId);
@@ -36,20 +37,20 @@ export class ConnectionUseCase implements ICommandHandler<ConnectionCommand> {
     await this.playersRepository.save(player);
 
     //выбрал 5 случайных вопросов для игры
-    const gameQuestion = await this.questionRepository.getRandomQuestion();
+    const question = await this.questionRepository.getRandomQuestion();
+    const gameQuestions = GameQuestion.createGameQuestions(question);
 
     //проверяю наличие игры
     let game = await this.gameRepository.findGamePending();
 
     //если игры нет, то создаю игру
     if (!game) {
-      game = Game.createGame(player, gameQuestion);
+      game = Game.createGame(player);
       await this.gameRepository.saveGame(game);
     } else {
       game.addPlayer(player);
       if (game.players.length === 2) {
-        game.updateStatus(GameStatus.Active);
-        game.startGameDate = new Date();
+        game.startGame(gameQuestions);
       }
       await this.gameRepository.saveGame(game);
     }

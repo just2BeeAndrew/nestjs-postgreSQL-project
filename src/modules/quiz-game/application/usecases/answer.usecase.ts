@@ -9,6 +9,4 @@ export class AnswerCommand {
 
 @CommandHandler(AnswerCommand)
 export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
-  game.quest
-  con
 }
