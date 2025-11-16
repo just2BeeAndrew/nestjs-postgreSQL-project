@@ -23,6 +23,12 @@ export class Game extends BaseEntity {
   @OneToMany(() => Player, players => players.game)
   players: Player[];
 
+  @Column()
+  startGameDate: Date;
+
+  @Column()
+  finishGameDate: Date;
+
   static createGame(player: Player, question: GameQuestion[] ) {
     const game = new Game();
     game.gameQuestions = question;

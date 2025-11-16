@@ -49,6 +49,7 @@ export class ConnectionUseCase implements ICommandHandler<ConnectionCommand> {
       game.addPlayer(player);
       if (game.players.length === 2) {
         game.updateStatus(GameStatus.Active);
+        game.startGameDate = new Date();
       }
       await this.gameRepository.saveGame(game);
     }

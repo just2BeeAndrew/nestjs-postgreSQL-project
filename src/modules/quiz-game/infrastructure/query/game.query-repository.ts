@@ -3,6 +3,7 @@ import { Game } from '../../domain/entity/game.entity';
 import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { GameViewDto } from '../../api/view-dto/game.view-dto';
+import { DomainExceptionFactory } from '../../../../core/exception/filters/domain-exception-factory';
 
 @Injectable()
 export class GameQueryRepository {
@@ -10,31 +11,36 @@ export class GameQueryRepository {
     @InjectRepository(Game) private readonly gameRepository: Repository<Game>,
   ) {}
 
-  async findGameById(gameId: string) {
-    const game = await this.gameRepository
-      .createQueryBuilder('g')
-      .leftJoin('g.players', 'p')
-      .leftJoin('player.answers', 'a')
-      .leftJoin('player.user', 'u')
-      .leftJoin('user.accountData', 'ad')
-      .select([
-        'g.*',
-        'p.*',
-        'a.*',
-        'u.*',
-        'ad.*'
-      ])
-      .getRawOne();
+  async findGameById(gameId: string): Promise<GameViewDto> {
+    const game = await this.gameRepository.findOne({
+      where: { id: gameId } ,
+      relations:{
+        players:{
+          answers:true,
+          user: {
+            accountData: true
+          }
+        },
+        gameQuestions: {
+          question: true
 
-    const firstPlayerAnswers = game.players[0].answers.map((answer) => ({
-      questionId: answer.questionId,
-      answerStatus: answer.answerStatus,
-      addedAt: answer.createdAt.toISOString(),
-    }));
+        }
+      }
+      // relations: [
+      //   'players',
+      //   'players.answers',
+      //   'players.user',
+      //   'players.user.accountData',
+      //   'gameQuestions',
+      //   'gameQuestions.question'
+      // ],
 
-    return GameViewDto.mapToView({
-    })
+    });
 
+    if (!game) {
+      throw DomainExceptionFactory.notFound();
+    }
 
+    return GameViewDto.mapToView(game);
   }
 }

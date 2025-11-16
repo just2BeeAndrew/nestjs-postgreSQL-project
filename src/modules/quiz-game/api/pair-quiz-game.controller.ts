@@ -29,4 +29,11 @@ export class PairQuizGameController {
 
     return this.queryBus.execute(new FindGameByIdQuery(gameId));
   }
+
+  @Post('my-current/answers')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.CREATED)
+  async answers(@ExtractUserFromAccessToken() user: AccessContextDto) {
+    const answer = await this.commandBus.execute<>()
+  }
 }

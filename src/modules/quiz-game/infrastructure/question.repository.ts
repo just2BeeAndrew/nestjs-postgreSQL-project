@@ -17,7 +17,7 @@ export class QuestionRepository {
   async findById(questionId: string): Promise<Question | null> {
     return await this.questionRepository.findOneBy({ id: questionId, published: false });
   }
-//TODO: можно ли оставить тут или вынести в квери репозиторий
+
   async getRandomQuestion() {
     return await this.questionRepository
     .createQueryBuilder('q')
@@ -29,7 +29,7 @@ export class QuestionRepository {
       .where('q.published = true' )
       .orderBy('RANDOM()')
       .limit(5)
-      .getRawMany()
+      .getMany()
   }
 
   async softDelete(questionId: string) {

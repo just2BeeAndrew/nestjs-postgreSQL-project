@@ -1,6 +1,4 @@
 import { AnswerStatus } from '../../domain/entity/answer.entity';
-import { Question } from '../../domain/entity/question.entity';
-import { QuestionViewDto } from './question.view-dto';
 import { Game, GameStatus } from '../../domain/entity/game.entity';
 
 export class AnswerViewDto {
@@ -28,16 +26,50 @@ export class QuestionsViewDto {
 export class GameViewDto {
   id: string;
   firstPlayerProgress: PlayerProgressViewDto;
-  secondPlayerProgress: PlayerProgressViewDto;
+  secondPlayerProgress: PlayerProgressViewDto | null;
   questions: QuestionsViewDto[];
   status: GameStatus;
   startGameDate: string;
   finishGameDate: string;
 
-  static mapToView() {
-    const dto = new GameViewDto();
+  static mapToView(game: Game): GameViewDto {
+    const [firstPlayer, secondPlayer] = game.players;
 
-    dto.id = gameId;
-    dto.firstPlayerProgress
+    return {
+      id: game.id,
+      firstPlayerProgress: {
+        answers: (firstPlayer.answers ?? []).map((a) => ({
+          questionId: a.questionId,
+          answerStatus: a.answerStatus,
+          addedAt: a.createdAt.toISOString(),
+        })),
+        player: {
+          id: firstPlayer.user.id,
+          login: firstPlayer.user.accountData.login,
+        },
+        score: firstPlayer.score,
+      },
+      secondPlayerProgress: secondPlayer
+        ? {
+            answers: (secondPlayer.answers ?? []).map((a) => ({
+              questionId: a.questionId,
+              answerStatus: a.answerStatus,
+              addedAt: a.createdAt.toISOString(),
+            })),
+            player: {
+              id: secondPlayer.user.id,
+              login: secondPlayer.user.accountData.login,
+            },
+            score: secondPlayer.score,
+          }
+        : null,
+      questions: game.gameQuestions.map((gq) => ({
+        id: gq.question.id,
+        body: gq.question.body,
+      })),
+      status: game.status,
+      startGameDate: (game.startGameDate as Date)?.toISOString() ?? null,
+      finishGameDate: (game.finishGameDate as Date)?.toISOString() ?? null
+    };
   }
 }
