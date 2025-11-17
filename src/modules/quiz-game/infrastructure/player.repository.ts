@@ -5,17 +5,28 @@ import { GameStatus } from '../domain/entity/game.entity';
 
 export class PlayerRepository {
   constructor(
-    @InjectRepository(Player) private platerRepository: Repository<Player>,
+    @InjectRepository(Player) private playerRepository: Repository<Player>,
   ) {}
 
   async save(player: Player): Promise<Player> {
-    return await this.platerRepository.save(player);
+    return await this.playerRepository.save(player);
   }
 
   async isActivePlayer(userId: string) {
-    return await this.platerRepository.findOne({
+    return await this.playerRepository.findOne({
       where: { userId: userId, game: { status: GameStatus.Active } },
       relations: ['game'],
+    });
+  }
+
+  async findPlayer(userId: string) {
+    return await this.playerRepository.findOne({
+      where: { userId: userId },
+      relations: {
+        game: {
+          gameQuestions: true,
+        },
+      },
     });
   }
 }

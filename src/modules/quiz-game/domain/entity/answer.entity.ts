@@ -12,6 +12,9 @@ export class Answer extends BaseEntity {
   @Column({type: "uuid"})
   questionId: string;
 
+  @Column({type: "text"})
+  answer: string;
+
   @Column({ type: 'text' })
   answerStatus: AnswerStatus;
 

@@ -26,15 +26,6 @@ export class GameQueryRepository {
 
         }
       }
-      // relations: [
-      //   'players',
-      //   'players.answers',
-      //   'players.user',
-      //   'players.user.accountData',
-      //   'gameQuestions',
-      //   'gameQuestions.question'
-      // ],
-
     });
 
     if (!game) {

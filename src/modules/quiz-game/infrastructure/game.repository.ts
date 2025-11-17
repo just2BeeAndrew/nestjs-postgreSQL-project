@@ -17,4 +17,6 @@ export class GameRepository {
       where: { status: GameStatus.PendingSecondPlayer },
     });
   }
+
+  async findGameById(){}
 }

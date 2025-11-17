@@ -20,8 +20,11 @@ import { PlayerRepository } from './infrastructure/player.repository';
 import { ConnectionUseCase } from './application/usecases/connection.usecase';
 import { FindGameByIdQueryHandler } from './application/queries/find-game-by-id.query-handler';
 import { GameQueryRepository } from './infrastructure/query/game.query-repository';
+import { AnswerUseCase } from './application/usecases/answer.usecase';
+import { AnswerRepository } from './infrastructure/answer.repository';
 
 const useCases = [
+  AnswerUseCase,
   ConnectionUseCase,
   CreateQuestionUseCase,
   DeleteQuestionUseCase,
@@ -41,6 +44,7 @@ const queries = [
   ],
   controllers: [PairQuizGameController, QuizQuestionsSuperAdminController],
   providers: [
+    AnswerRepository,
     GameRepository,
     GameQueryRepository,
     PlayerRepository,
