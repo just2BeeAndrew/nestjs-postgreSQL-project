@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { GameRepository } from '../../infrastructure/game.repository';
 import { UsersRepository } from '../../../user-accounts/infrastructure/users.repository';
 import { DomainExceptionFactory } from '../../../../core/exception/filters/domain-exception-factory';
-import { Game, GameStatus } from '../../domain/entity/game.entity';
+import { Game } from '../../domain/entity/game.entity';
 import { Player } from '../../domain/entity/player.entity';
 import { PlayerRepository } from '../../infrastructure/player.repository';
 import { QuestionRepository } from '../../infrastructure/question.repository';
@@ -34,7 +34,7 @@ export class ConnectionUseCase implements ICommandHandler<ConnectionCommand> {
 
     //создал игрока
     const player = Player.createPlayer(user);
-    await this.playersRepository.save(player);
+    await this.playersRepository.savePlayer(player);
 
     //выбрал 5 случайных вопросов для игры
     const question = await this.questionRepository.getRandomQuestion();

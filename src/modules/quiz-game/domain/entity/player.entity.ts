@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { User } from '../../../user-accounts/domain/entities/user.entity';
 import { BaseEntity } from '../../../../core/entities/base.entity';
 import { Answer } from './answer.entity';
@@ -25,19 +19,23 @@ export class Player extends BaseEntity {
   @Column({ type: 'uuid' })
   userId: string;
 
-  @ManyToOne(()=> Game, (game) => game.players)
+  @ManyToOne(() => Game, (game) => game.players)
   @JoinColumn({ name: 'gameId' })
   game: Game;
 
-  @Column({ type: 'uuid' , nullable: true, default: null })
+  @Column({ type: 'uuid', nullable: true, default: null })
   gameId: string;
 
-  static createPlayer(user: User){
-    const player = new Player()
+  static createPlayer(user: User) {
+    const player = new Player();
 
     player.userId = user.id;
-    player.answers = []
+    player.answers = [];
 
     return player;
+  }
+
+  addScore() {
+    this.score += 1;
   }
 }

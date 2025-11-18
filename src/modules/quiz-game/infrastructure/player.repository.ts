@@ -8,7 +8,7 @@ export class PlayerRepository {
     @InjectRepository(Player) private playerRepository: Repository<Player>,
   ) {}
 
-  async save(player: Player): Promise<Player> {
+  async savePlayer(player: Player): Promise<Player> {
     return await this.playerRepository.save(player);
   }
 

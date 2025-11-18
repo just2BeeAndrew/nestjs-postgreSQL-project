@@ -2,7 +2,6 @@ import { Column, Entity, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../../../core/entities/base.entity';
 import { GameQuestion } from './game-question.entity';
 import { Player } from './player.entity';
-import { Question } from './question.entity';
 
 export enum GameStatus {
   PendingSecondPlayer = 'PendingSecondPlayer',
@@ -43,5 +42,10 @@ export class Game extends BaseEntity {
     this.gameQuestions = gameQuestion;
     this.startGameDate = new Date();
     this.status = GameStatus.Active;
+  }
+
+  finishGame() {
+    this.finishGameDate = new Date();
+    this.status = GameStatus.Finished;
   }
 }

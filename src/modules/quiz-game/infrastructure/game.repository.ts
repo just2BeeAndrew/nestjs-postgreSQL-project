@@ -18,5 +18,11 @@ export class GameRepository {
     });
   }
 
-  async findGameById(){}
+  async findGameById(gameId: string): Promise<Game | null> {
+    return this.gameRepository.findOne({
+      where: {
+        id: gameId,
+      }
+    })
+  }
 }

@@ -22,6 +22,7 @@ import { FindGameByIdQueryHandler } from './application/queries/find-game-by-id.
 import { GameQueryRepository } from './infrastructure/query/game.query-repository';
 import { AnswerUseCase } from './application/usecases/answer.usecase';
 import { AnswerRepository } from './infrastructure/answer.repository';
+import { GameQuestionRepository } from './infrastructure/game-question.repository';
 
 const useCases = [
   AnswerUseCase,
@@ -47,6 +48,7 @@ const queries = [
     AnswerRepository,
     GameRepository,
     GameQueryRepository,
+    GameQuestionRepository,
     PlayerRepository,
     QuestionRepository,
     QuestionQueryRepository,
