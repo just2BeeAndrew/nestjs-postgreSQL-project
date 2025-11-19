@@ -23,6 +23,7 @@ import { GameQueryRepository } from './infrastructure/query/game.query-repositor
 import { AnswerUseCase } from './application/usecases/answer.usecase';
 import { AnswerRepository } from './infrastructure/answer.repository';
 import { GameQuestionRepository } from './infrastructure/game-question.repository';
+import { MyCurrentQueryHandler } from './application/queries/my-current.query-handler';
 
 const useCases = [
   AnswerUseCase,
@@ -37,6 +38,7 @@ const queries = [
   FindAllQuestionsQueryHandler,
   FindGameByIdQueryHandler,
   FindQuestionByIdQueryHandler,
+  MyCurrentQueryHandler,
 ];
 
 @Module({

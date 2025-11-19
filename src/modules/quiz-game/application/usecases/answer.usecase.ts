@@ -5,6 +5,7 @@ import { DomainExceptionFactory } from '../../../../core/exception/filters/domai
 import { AnswerRepository } from '../../infrastructure/answer.repository';
 import { Answer, AnswerStatus } from '../../domain/entity/answer.entity';
 import { GameQuestionRepository } from '../../infrastructure/game-question.repository';
+import { GameStatus } from '../../domain/entity/game.entity';
 
 export class AnswerCommand {
   constructor(
@@ -23,7 +24,6 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
   ) {}
 
   async execute(command: AnswerCommand) {
-    //TODO: добавить проверку 403
     const player = await this.playerRepository.findPlayer(command.userId);
     if (!player) {
       throw DomainExceptionFactory.notFound();
@@ -39,6 +39,15 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
       await this.gameQuestionRepository.countGameQuestions(player.gameId);
 
     let answersCount = player.answers.length;
+
+    if (
+      player.game.status !== GameStatus.Active ||
+      (player.game.status === GameStatus.Active &&
+        answersCount === totalGameQuestions)
+    ) {
+      throw DomainExceptionFactory.forbidden();
+    }
+
 
     const answerStatus = player.game.gameQuestions[
       answersCount

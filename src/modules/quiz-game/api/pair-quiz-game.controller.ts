@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -14,6 +16,7 @@ import { ConnectionCommand } from '../application/usecases/connection.usecase';
 import { FindGameByIdQuery } from '../application/queries/find-game-by-id.query-handler';
 import { AnswerCommand } from '../application/usecases/answer.usecase';
 import { AnswerInputDto } from './input-dto/answer.input-dto';
+import { MyCurrentQuery } from '../application/queries/my-current.query-handler';
 
 @Controller('pair-quiz-game/pairs')
 export class PairQuizGameController {
@@ -21,6 +24,18 @@ export class PairQuizGameController {
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
   ) {}
+
+  @Get('my-current')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async myCurrent(@ExtractUserFromAccessToken() user: AccessContextDto) {
+    return this.queryBus.execute(new MyCurrentQuery(user.id))
+  }
+
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async findGameById(@ExtractUserFromAccessToken() user: AccessContextDto, @Param('id') id: string) {}
 
   @Post('connection')
   @UseGuards(JwtAuthGuard)
@@ -30,7 +45,7 @@ export class PairQuizGameController {
       new ConnectionCommand(user.id),
     );
 
-    return this.queryBus.execute(new FindGameByIdQuery(gameId));
+    return this.queryBus.execute(new FindGameByIdQuery(gameId, user.id));
   }
 
   @Post('my-current/answers')
@@ -40,7 +55,7 @@ export class PairQuizGameController {
     @ExtractUserFromAccessToken() user: AccessContextDto,
     @Body() body: AnswerInputDto,
   ) {
-    const answer = await this.commandBus.execute<AnswerCommand>(
+    return await this.commandBus.execute<AnswerCommand>(
       new AnswerCommand(user.id, body.answer),
     );
   }
