@@ -24,6 +24,7 @@ import { AnswerUseCase } from './application/usecases/answer.usecase';
 import { AnswerRepository } from './infrastructure/answer.repository';
 import { GameQuestionRepository } from './infrastructure/game-question.repository';
 import { MyCurrentQueryHandler } from './application/queries/my-current.query-handler';
+import { UserAccountsModule } from '../user-accounts/user-accounts.module';
 
 const useCases = [
   AnswerUseCase,
@@ -43,6 +44,7 @@ const queries = [
 
 @Module({
   imports: [
+    UserAccountsModule,
     TypeOrmModule.forFeature([Answer, Game, GameQuestion, Player, Question]),
   ],
   controllers: [PairQuizGameController, QuizQuestionsSuperAdminController],

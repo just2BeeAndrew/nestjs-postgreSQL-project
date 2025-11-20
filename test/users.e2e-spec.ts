@@ -62,7 +62,7 @@ describe('Users (e2e)', () => {
     };
 
     it('should create user and return 201', async () => {
-      const response = await request(app.getHttpServer())
+      return await request(app.getHttpServer())
         .post('/api/sa/users')
         .set('Authorization', `Basic ${credentials}`)
         .send(createUserDto)
@@ -90,11 +90,6 @@ describe('Users (e2e)', () => {
         .auth('admin', 'qwerty')
         .expect(200)
         .expect((res) => {
-
-          console.log('Response body:', JSON.stringify(res.body, null, 2));
-          console.log('Total users:', res.body.totalCount);
-          console.log('Items count:', res.body.items.length);
-
           expect(res.body).toMatchObject({
             pagesCount: expect.any(Number),
             page: expect.any(Number),
@@ -160,10 +155,6 @@ describe('Users (e2e)', () => {
         .expect((res) => {
           const logins = res.body.items.map((user) => user.login);
           const sortedLogins = [...logins].sort();
-
-          console.log('Received logins:', logins);
-          console.log('Expected logins:', sortedLogins);
-          console.log('Are equal:', JSON.stringify(logins) === JSON.stringify(sortedLogins));
 
           expect(logins).toEqual(sortedLogins);
         });

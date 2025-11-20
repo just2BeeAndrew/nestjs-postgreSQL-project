@@ -23,7 +23,7 @@ const testingModule:any = [];
 if(process.env.NODE_ENV === 'testing'){
   testingModule.push(TestingModule);
 }
-//TODO: сделать ревью подключения бд
+
 @Module({
   imports: [
     configModule,
