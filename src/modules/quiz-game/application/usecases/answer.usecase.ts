@@ -31,7 +31,7 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
 
     const game = await this.gameRepository.findGameById(player.gameId);
     if (!game) {
-      throw DomainExceptionFactory.notFound();
+      throw DomainExceptionFactory.notFound();//403
     }
 
     //Получаю общее количество вопросов в игре

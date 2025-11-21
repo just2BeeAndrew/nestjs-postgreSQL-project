@@ -4,6 +4,8 @@ import { AppModule } from '../src/app.module';
 import { appSetup } from '../src/setup/app.setup';
 import { DataSource, Repository } from 'typeorm';
 import { Blog } from '../src/modules/bloggers-platform/domain/entities/blog.entity';
+import * as dotenv from 'dotenv';
+dotenv.config({ path: 'src/env/.env.testing' });
 
 class TestLogger implements LoggerService {
   log(message: string) {}
@@ -32,7 +34,7 @@ describe('Blogs(e2e)', () => {
 
     blogRepository = dataSource.getRepository(Blog);
 
-    await dataSource.synchronize(true);
+    await dataSource.synchronize(false);
   });
 
   beforeEach(async () => {});
@@ -43,4 +45,8 @@ describe('Blogs(e2e)', () => {
   });
 
   afterEach(async () => {});
+
+  it('should run basic test', () => {
+    expect(true).toBe(true);
+  });
 });

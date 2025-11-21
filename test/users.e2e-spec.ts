@@ -8,6 +8,8 @@ import { User } from '../src/modules/user-accounts/domain/entities/user.entity';
 import { AccountData } from '../src/modules/user-accounts/domain/entities/account-data.entity';
 import { UserTestManager } from './helpers/user-test-manager';
 import { deleteAllData } from './helpers/delete-all-data';
+import * as dotenv from 'dotenv';
+dotenv.config({ path: 'src/env/.env.testing' });
 
 class TestLogger implements LoggerService {
   log(message: string) {}
@@ -41,7 +43,7 @@ describe('Users (e2e)', () => {
     userRepository = dataSource.getRepository(User);
     accountDataRepository = dataSource.getRepository(AccountData);
 
-    await dataSource.synchronize(true);
+    await dataSource.synchronize(false);
   });
 
   beforeEach(async () => {});

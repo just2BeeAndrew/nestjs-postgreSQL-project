@@ -5,6 +5,8 @@ import { AppModule } from '../src/app.module';
 import { appSetup } from '../src/setup/app.setup';
 import { DataSource } from 'typeorm';
 import { deleteAllData } from './helpers/delete-all-data';
+import * as dotenv from 'dotenv';
+dotenv.config({ path: 'src/env/.env.testing' });
 
 describe('auth', () => {
   let app: INestApplication;

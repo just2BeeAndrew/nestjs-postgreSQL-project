@@ -4,9 +4,6 @@ import {join} from 'path';
 import * as dotenv from 'dotenv'
 dotenv.config();
 
-console.log('DB_HOST:', process.env.NODE_ENV);
-
-
 export const configModule = ConfigModule.forRoot({
   isGlobal: true,
   envFilePath: [
