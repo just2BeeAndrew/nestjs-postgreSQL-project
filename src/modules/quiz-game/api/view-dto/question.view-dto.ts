@@ -1,7 +1,7 @@
 export class QuestionRaw {
   id: string;
   body: string;
-  correctAnswer: string[];
+  correctAnswers: string[];
   published: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -11,20 +11,20 @@ export class QuestionRaw {
 export class QuestionViewDto {
   id: string;
   body: string;
-  correctAnswer: string[];
+  correctAnswers: string[];
   published: boolean;
   createdAt: string;
-  updatedAt: string;
+  updatedAt: Date;
 
   static mapToView(question: QuestionRaw): QuestionViewDto {
     const dto = new QuestionViewDto();
 
     dto.id = question.id;
     dto.body = question.body;
-    dto.correctAnswer = question.correctAnswer;
+    dto.correctAnswers = question.correctAnswers;
     dto.published = question.published;
     dto.createdAt = question.createdAt.toISOString();
-    dto.updatedAt = question.updatedAt.toISOString();
+    dto.updatedAt = question.updatedAt;
 
     return dto;
   }

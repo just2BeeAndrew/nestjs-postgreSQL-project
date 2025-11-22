@@ -20,6 +20,10 @@ export class CreateQuestionUseCase
 
     await this.questionRepository.saveQuestion(question);
 
+    question.updatedAt = null;
+
+    await this.questionRepository.saveQuestion(question);
+
     return question.id
   }
 }

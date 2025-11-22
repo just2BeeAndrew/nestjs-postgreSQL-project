@@ -21,6 +21,13 @@ export class QuestionQueryRepository {
   ): Promise<PaginatedViewDto<QuestionViewDto[]>> {
     const sortDirection = query.sortDirection.toUpperCase() as 'ASC' | 'DESC';
 
+    const publishedMap = new Map<string, boolean | null>([
+      ['all', null],
+      ['published', true],
+      ['notPublished', false],
+    ]);
+    const publishedFilter = publishedMap.get(query.publishedStatus) ?? null;
+
     const bodyTerm = query.bodySearchTerm ? `%${query.bodySearchTerm}%` : null;
 
     let questionsQb = this.questionRepository
@@ -33,7 +40,12 @@ export class QuestionQueryRepository {
         'q.createdAt AS "createdAt"',
         'q.updatedAt AS "updatedAt"',
       ])
-      .where('q.published = :published', { published: query.publishedStatus });
+
+    if (publishedFilter !== null) {
+      questionsQb = questionsQb.where('q.published = :published', {
+        published: publishedFilter,
+      });
+    }
 
     if (bodyTerm) {
       questionsQb = questionsQb.andWhere('q.body ILIKE :bodyTerm', {
@@ -50,7 +62,12 @@ export class QuestionQueryRepository {
 
     let questionsCount = this.questionRepository
       .createQueryBuilder('q')
-      .where('q.published = :published', { published: query.publishedStatus });
+
+    if (publishedFilter !== null) {
+      questionsCount = questionsQb.where('q.published = :published', {
+        published: publishedFilter,
+      });
+    }
 
     if (bodyTerm) {
       questionsCount = questionsCount.andWhere('q.body ILIKE :bodyTerm', {
