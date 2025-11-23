@@ -20,11 +20,11 @@ export class Game extends BaseEntity {
   @OneToMany(() => Player, (players) => players.game)
   players: Player[];
 
-  @Column()
-  startGameDate: Date;
+  @Column({ type: 'timestamptz', nullable: true })
+  startGameDate: Date | null;
 
-  @Column()
-  finishGameDate: Date;
+  @Column({ type: 'timestamptz', nullable: true })
+  finishGameDate: Date | null;
 
   static createGame(player: Player) {
     const game = new Game();

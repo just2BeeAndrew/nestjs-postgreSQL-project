@@ -74,7 +74,7 @@ describe('Users (e2e)', () => {
 
   describe('api/sa/users (GET)', () => {
     beforeEach(async () => {
-      await deleteAllData(app); // Изменено: this.app -> app
+      await deleteAllData(app)
       await userTestManager.createSeveralUsers(10);
     });
 

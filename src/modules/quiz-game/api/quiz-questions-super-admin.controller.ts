@@ -7,7 +7,8 @@ import {
   HttpStatus,
   Param,
   Post,
-  Put, Query,
+  Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { BasicAuthGuard } from '../../../core/guards/basic/basic-auth.guard';
@@ -35,7 +36,9 @@ export class QuizQuestionsSuperAdminController {
   @Get()
   @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async findAllQuestions(@Query() query: FindQuestionsQueryParams): Promise<PaginatedViewDto<QuestionViewDto[]>>{
+  async findAllQuestions(
+    @Query() query: FindQuestionsQueryParams,
+  ): Promise<PaginatedViewDto<QuestionViewDto[]>> {
     return this.queryBus.execute(new FindAllQuestionsQuery(query));
   }
 
@@ -72,7 +75,7 @@ export class QuizQuestionsSuperAdminController {
     );
   }
 
-  @Put(':id')
+  @Put(':id/publish')
   @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async publishQuestion(

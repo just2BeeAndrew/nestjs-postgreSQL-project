@@ -9,6 +9,7 @@ enum PublishedStatus {
 
 enum QuestionSortBy {
   CreatedAt = 'createdAt',
+  Body = 'body',
 }
 
 export class FindQuestionsQueryParams extends BaseQueryParams {

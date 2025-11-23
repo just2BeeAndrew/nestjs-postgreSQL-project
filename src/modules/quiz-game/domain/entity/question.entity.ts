@@ -5,7 +5,7 @@ import { GameQuestion } from './game-question.entity';
 
 @Entity({ name: 'Question' })
 export class Question extends BaseEntity {
-  @Column({ type: 'text' })
+  @Column({ type: 'text', collation: 'C.utf8' })
   body: string;
 
   @Column({ type: 'jsonb' })
