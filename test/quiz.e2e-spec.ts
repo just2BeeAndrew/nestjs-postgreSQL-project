@@ -1,23 +1,13 @@
-import { HttpStatus, LoggerService } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import { NestApplication } from '@nestjs/core';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
-import { appSetup } from '../src/setup/app.setup';
 import { DataSource, Repository } from 'typeorm';
 import { Question } from '../src/modules/quiz-game/domain/entity/question.entity';
 import { deleteAllData } from './helpers/delete-all-data';
 import { CreateQuestionInputDto } from '../src/modules/quiz-game/api/input-dto/create-question.input-dto';
 import request from 'supertest';
 import * as dotenv from 'dotenv';
-dotenv.config({ path: 'src/env/.env.testing' });
-
-class TestLogger implements LoggerService {
-  log(message: string) {}
-  error(message: string, trace: string) {}
-  warn(message: string) {}
-  debug(message: string) {}
-  verbose(message: string) {}
-}
+dotenv.config({ path: `${process.cwd()}/env/.env.testing` });
+import { initSettings } from './helpers/init-settings';
 
 describe('Quiz (e2e)', () => {
   let app: NestApplication;
@@ -31,16 +21,13 @@ describe('Quiz (e2e)', () => {
   };
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
+    const { app: nestApp, testingModule } = await initSettings();
 
-    app = moduleFixture.createNestApplication();
-    appSetup(app);
-    app.useLogger(new TestLogger());
+    app = nestApp;
+
     await app.init();
 
-    dataSource = moduleFixture.get(DataSource);
+    dataSource = testingModule.get(DataSource);
 
     questionRepository = dataSource.getRepository(Question);
 
@@ -65,6 +52,4 @@ describe('Quiz (e2e)', () => {
       .send(createQuestionDto)
       .expect(HttpStatus.CREATED);
   });
-
-
 });
