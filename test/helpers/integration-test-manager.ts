@@ -5,6 +5,7 @@ import { BcryptService } from '../../src/modules/bcrypt/application/bcrypt.servi
 import { TestingModule } from '@nestjs/testing';
 import { Game } from '../../src/modules/quiz-game/domain/entity/game.entity';
 import { Question } from '../../src/modules/quiz-game/domain/entity/question.entity';
+import { Player } from '../../src/modules/quiz-game/domain/entity/player.entity';
 
 export class IntegrationTestManager {
   private bcryptService: BcryptService;
@@ -45,6 +46,21 @@ export class IntegrationTestManager {
     }
 
     return users;
+  }
+
+  async createPlayer(user: User) {
+    const playerRepo = this.dataSource.getRepository(Player);
+
+    const player = Player.createPlayer(user);
+
+    return playerRepo.save(player);
+  }
+
+  async createGame(player: Player) {
+    const gameRepo = this.dataSource.getRepository(Game);
+    const game = Game.createGame(player);
+
+    return gameRepo.save(game);
   }
 
   async createConfirmedUser(createModel: CreateUserInputDto): Promise<User> {

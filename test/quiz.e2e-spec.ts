@@ -99,5 +99,9 @@ describe('Quiz (e2e)', () => {
     });
   });
 
+  describe('api/pair-game-quiz/pairs/my-current', ()=>{
+    it('should return status 201 ', async () => {})
+  })
+
 
 });

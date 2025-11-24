@@ -42,7 +42,6 @@ if(process.env.NODE_ENV === 'testing'){
     QuizGameModule,
     ...testingModule,
     CqrsModule.forRoot({}),
-    QuizGameModule,
   ],
   controllers: [
     AppController,

@@ -16,15 +16,15 @@ export class Answer extends BaseEntity {
   @Column({type: "text"})
   answer: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'enum', enum: AnswerStatus })
   answerStatus: AnswerStatus;
-
-  @ManyToOne(() => Player, (player) => player.answers)
-  @JoinColumn({ name: 'playerId' })
-  player: Player;
 
   @Column({ type: 'uuid' })
   playerId: string;
+
+  @ManyToOne(() => Player, (player) => player.answers, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'playerId' })
+  player: Player;
 
   static createAnswer(dto: CreateAnswerDomainDto) {
     const answer = new Answer();

@@ -15,6 +15,9 @@ export class GameRepository {
   async findGamePending() {
     return await this.gameRepository.findOne({
       where: { status: GameStatus.PendingSecondPlayer },
+      relations: {
+        players: true
+      }
     });
   }
 

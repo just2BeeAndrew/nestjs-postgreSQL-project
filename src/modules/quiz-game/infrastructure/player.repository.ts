@@ -21,10 +21,21 @@ export class PlayerRepository {
 
   async findPlayer(userId: string) {
     return await this.playerRepository.findOne({
-      where: { userId: userId },
-      relations: {
+      where: {
+        userId: userId,
         game: {
-          gameQuestions: true,
+          status: GameStatus.Active,
+        },
+      },
+      relations: {
+        answers:true,
+        game: {
+          players: {
+            answers: true,
+          },
+          gameQuestions: {
+            question:true
+          }
         },
       },
     });

@@ -15,18 +15,17 @@ export class QuestionRepository {
   }
 
   async findById(questionId: string): Promise<Question | null> {
-    return await this.questionRepository.findOneBy({ id: questionId, published: false });
+    return await this.questionRepository.findOneBy({
+      id: questionId,
+      published: false,
+    });
   }
 
   async getRandomQuestion() {
     return await this.questionRepository
-    .createQueryBuilder('q')
-      .select([
-        'q.id AS id',
-        'q.body AS body',
-        'q.correctAnswers AS "correctAnswers"',
-      ])
-      .where('q.published = true' )
+      .createQueryBuilder('q')
+      .where('q.published = :published', { published: true })
+      .andWhere('q.deletedAt IS NULL')
       .orderBy('RANDOM()')
       .limit(5)
       .getMany()

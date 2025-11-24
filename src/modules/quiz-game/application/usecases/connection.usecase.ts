@@ -7,6 +7,7 @@ import { Player } from '../../domain/entity/player.entity';
 import { PlayerRepository } from '../../infrastructure/player.repository';
 import { QuestionRepository } from '../../infrastructure/question.repository';
 import { GameQuestion } from '../../domain/entity/game-question.entity';
+import { GameQuestionRepository } from '../../infrastructure/game-question.repository';
 
 export class ConnectionCommand {
   constructor(public userId: string) {}
@@ -19,6 +20,7 @@ export class ConnectionUseCase implements ICommandHandler<ConnectionCommand> {
     private usersRepository: UsersRepository,
     private playersRepository: PlayerRepository,
     private questionRepository: QuestionRepository,
+    private gameQuestionRepository: GameQuestionRepository,
   ) {}
 
   async execute({ userId }: ConnectionCommand) {
@@ -36,9 +38,11 @@ export class ConnectionUseCase implements ICommandHandler<ConnectionCommand> {
     const player = Player.createPlayer(user);
     await this.playersRepository.savePlayer(player);
 
-    //выбрал 5 случайных вопросов для игры
-    const question = await this.questionRepository.getRandomQuestion();
-    const gameQuestions = GameQuestion.createGameQuestions(question);
+    // //выбрал 5 случайных вопросов для игры
+
+    // console.log('question', question);
+
+    // console.log('gameQuestion', gameQuestions);
 
     //проверяю наличие игры
     let game = await this.gameRepository.findGamePending();
@@ -47,9 +51,17 @@ export class ConnectionUseCase implements ICommandHandler<ConnectionCommand> {
     if (!game) {
       game = Game.createGame(player);
       await this.gameRepository.saveGame(game);
+    } else if (game.players[0].userId === userId) {
+      throw DomainExceptionFactory.forbidden();
     } else {
       game.addPlayer(player);
       if (game.players.length === 2) {
+        const question = await this.questionRepository.getRandomQuestion();
+
+        const gameQuestions = GameQuestion.createGameQuestions(question, game);
+        await this.gameQuestionRepository.saveGameQuestion(gameQuestions);
+        console.log(gameQuestions);
+
         game.startGame(gameQuestions);
       }
       await this.gameRepository.saveGame(game);

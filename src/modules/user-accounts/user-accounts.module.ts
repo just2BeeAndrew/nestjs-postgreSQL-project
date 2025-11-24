@@ -72,7 +72,7 @@ const queries = [
   imports: [
     NotificationsModule,
     BcryptModule,
-    ThrottlerModule.forRoot([{ ttl: 10000, limit: 5 }]),
+    ThrottlerModule.forRoot([{ ttl: 10000, limit: 6 }]),
     TypeOrmModule.forFeature([User, AccountData, EmailConfirmation, Session]),
   ],
   controllers: [UsersSuperAdminController, AuthController, SecurityDevicesController],

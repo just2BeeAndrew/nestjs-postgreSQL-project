@@ -10,6 +10,10 @@ export class GameQuestionRepository {
     private gameQuestionRepository: Repository<GameQuestion>,
   ) {}
 
+  async saveGameQuestion(gameQuestion: GameQuestion[]): Promise<GameQuestion[]> {
+    return await this.gameQuestionRepository.save(gameQuestion);
+  }
+
   async countGameQuestions(gameId: string) {
     return await this.gameQuestionRepository.count({
       where: {

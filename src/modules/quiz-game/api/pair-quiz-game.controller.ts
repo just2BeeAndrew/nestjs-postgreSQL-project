@@ -18,7 +18,7 @@ import { AnswerCommand } from '../application/usecases/answer.usecase';
 import { AnswerInputDto } from './input-dto/answer.input-dto';
 import { MyCurrentQuery } from '../application/queries/my-current.query-handler';
 
-@Controller('pair-quiz-game/pairs')
+@Controller('pair-game-quiz/pairs')
 export class PairQuizGameController {
   constructor(
     private readonly commandBus: CommandBus,
@@ -35,7 +35,9 @@ export class PairQuizGameController {
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async findGameById(@ExtractUserFromAccessToken() user: AccessContextDto, @Param('id') id: string) {}
+  async findGameById(@ExtractUserFromAccessToken() user: AccessContextDto, @Param('id') id: string) {
+    return this.queryBus.execute(new FindGameByIdQuery(id, user.id));
+  }
 
   @Post('connection')
   @UseGuards(JwtAuthGuard)

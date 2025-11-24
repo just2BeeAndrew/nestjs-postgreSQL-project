@@ -30,6 +30,7 @@ export class Player extends BaseEntity {
     const player = new Player();
 
     player.userId = user.id;
+    player.score = 0;
     player.answers = [];
 
     return player;

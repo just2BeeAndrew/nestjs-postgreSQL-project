@@ -19,14 +19,19 @@ export class GameQuestion extends BaseEntity {
   @Column({ type: 'uuid' })
   questionId: string;
 
-  static createGameQuestions(questions: Question[]) {
+  static createGameQuestions(
+    questions: Question[],
+    game: Game,
+  ): GameQuestion[] {
     return questions.map((q) => {
       const gameQuestions = new GameQuestion();
 
       gameQuestions.question = q;
       gameQuestions.questionId = q.id;
+      gameQuestions.game = game;
+      gameQuestions.gameId = game.id;
 
-      return gameQuestions
+      return gameQuestions;
     });
   }
 }
