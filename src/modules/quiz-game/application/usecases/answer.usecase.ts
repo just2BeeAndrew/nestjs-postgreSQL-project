@@ -30,8 +30,10 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
       throw DomainExceptionFactory.forbidden();
     }
 
+    console.log(player);
+
     // Находим игру
-    const game = player.game;
+    const game = player.game;//достать игру через репо
 
     // Получаем общее количество вопросов в игре
     const totalGameQuestions =

@@ -10,21 +10,21 @@ export enum AnswerStatus {
 
 @Entity({ name: 'Answer' })
 export class Answer extends BaseEntity {
-  @Column({type: "uuid"})
+  @Column({ type: 'uuid' })
   questionId: string;
 
-  @Column({type: "text"})
+  @Column({ type: 'text' })
   answer: string;
 
   @Column({ type: 'enum', enum: AnswerStatus })
   answerStatus: AnswerStatus;
 
-  @Column({ type: 'uuid' })
-  playerId: string;
-
-  @ManyToOne(() => Player, (player) => player.answers, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Player, (player) => player.answers)
   @JoinColumn({ name: 'playerId' })
   player: Player;
+
+  @Column({ type: 'uuid' })
+  playerId: string;
 
   static createAnswer(dto: CreateAnswerDomainDto) {
     const answer = new Answer();

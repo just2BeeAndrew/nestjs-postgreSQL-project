@@ -41,7 +41,7 @@ export class PairQuizGameController {
 
   @Post('connection')
   @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.CREATED)
+  @HttpCode(HttpStatus.OK)
   async connection(@ExtractUserFromAccessToken() user: AccessContextDto) {
     const gameId = await this.commandBus.execute<ConnectionCommand>(
       new ConnectionCommand(user.id),
@@ -52,7 +52,7 @@ export class PairQuizGameController {
 
   @Post('my-current/answers')
   @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.CREATED)
+  @HttpCode(HttpStatus.OK)
   async answers(
     @ExtractUserFromAccessToken() user: AccessContextDto,
     @Body() body: AnswerInputDto,

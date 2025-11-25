@@ -28,15 +28,22 @@ export class PlayerRepository {
         },
       },
       relations: {
-        answers:true,
+        answers: true,
+        game: true,
+      },
+    });
+  }
+
+  async findEmptyPlayer(userId: string) {
+    return await this.playerRepository.findOne({
+      where: {
+        userId: userId,
         game: {
-          players: {
-            answers: true,
-          },
-          gameQuestions: {
-            question:true
-          }
+          status: GameStatus.Active,
         },
+      },
+      relations: {
+        game: true,
       },
     });
   }
