@@ -9,12 +9,14 @@ import * as dotenv from 'dotenv';
 dotenv.config({ path: `${process.cwd()}/env/.env.testing` });
 import { initSettings } from './helpers/init-settings';
 import { QuestionsTestManager } from './helpers/questions-test-manager';
+import { UserTestManager } from './helpers/user-test-manager';
 
 describe('Quiz (e2e)', () => {
   let app: NestApplication;
   let dataSource: DataSource;
   let questionRepository: Repository<Question>;
   let questionsTestManager: QuestionsTestManager;
+  let usersTestManager: UserTestManager;
 
   const credentials = Buffer.from('admin:qwerty').toString('base64');
   const createQuestionDto: CreateQuestionInputDto = {
@@ -27,6 +29,7 @@ describe('Quiz (e2e)', () => {
     app = nestApp;
     await app.init();
     questionsTestManager = new QuestionsTestManager(app);
+    usersTestManager = new UserTestManager(app);
     dataSource = testingModule.get(DataSource);
     questionRepository = dataSource.getRepository(Question);
     await dataSource.synchronize(false);
@@ -99,9 +102,26 @@ describe('Quiz (e2e)', () => {
     });
   });
 
-  describe('api/pair-game-quiz/pairs/my-current', ()=>{
-    it('should return status 201 ', async () => {})
-  })
+  describe('api/pair-game-quiz/pairs/my-current', () => {
+    it('should return status 400 ', async () => {
+      const users = await usersTestManager.createSeveralUsers(2);
+      console.log('Результат: Создано пользователей:', users.length);
+      console.log('User1:', users[0].login);
+      console.log('User2:', users[1].login);
 
+      const questions = await questionsTestManager.createSeveralQuestions(5);
+      console.log('Результат: Создано вопросов:', questions.length);
 
+      for (const question of questions) {
+        await questionsTestManager.publishQuestion(question.id)
+      }
+      console.log('Результат: Все вопросы опубликованы')
+
+      const userAccessToken1 = await usersTestManager.loginUser(users[0].login, '123456789')
+      console.log('Результат: User1 залогинен, токен получен: ', userAccessToken1.substring(0));
+
+      const userAccessToken2 = await usersTestManager.loginUser(users[1].login, '123456789')
+      console.log('Результат: User2 залогинен, токен получен: ', userAccessToken2.substring(0));
+    });
+  });
 });

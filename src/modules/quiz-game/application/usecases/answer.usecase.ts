@@ -85,14 +85,13 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
       const otherPlayer = game.players.find((p) => p.id !== player.id);
 
       if (otherPlayer) {
-        const otherPlayerAnswersCount = otherPlayer.answers.length;
+        const otherPlayerAnswersCount =
+          await this.answerRepository.countAnswers(otherPlayer.id, game.id);
 
         // Если текущий игрок первый завершил
         if (otherPlayerAnswersCount < QUESTION_COUNT) {
           // Проверяем, есть ли у него правильные ответы
-          const hasCorrectAnswers = player.answers.some(
-            (a) => a.answerStatus === AnswerStatus.Correct,
-          );
+          const hasCorrectAnswers = await this.answerRepository.countCorrectAnswers(player.id, game.id);
 
           // Бонусное очко за скорость
           if (hasCorrectAnswers) {

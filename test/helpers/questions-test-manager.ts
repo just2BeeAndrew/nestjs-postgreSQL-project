@@ -35,4 +35,12 @@ export class QuestionsTestManager {
     }
     return questions;
   }
+
+  async publishQuestion(questionId: string) {
+    await request(this.app.getHttpServer())
+      .put(`/api/sa/quiz/questions/${questionId}/publish`)
+      .set('Authorization', 'Basic ' + credentials)
+      .send({ published: true })
+      .expect(HttpStatus.NO_CONTENT);
+  }
 }

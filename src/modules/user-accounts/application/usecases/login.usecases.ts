@@ -66,8 +66,6 @@ export class LoginUseCase implements ICommandHandler<LoginCommand> {
       user,
     );
 
-    console.log("session", session.iat, session.exp);
-
     await this.sessionsRepository.saveSession(session);
 
     return { accessToken, refreshToken };

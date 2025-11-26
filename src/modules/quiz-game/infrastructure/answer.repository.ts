@@ -22,23 +22,17 @@ export class AnswerRepository {
           gameId: gameId,
         },
       },
-      relations: {
-        player: true,
-      },
     });
   }
 
-  async countCorrectAnswers(playerId: string, gameId: string): Promise<number> {
-    return await this.answerRepository.count({
+  async countCorrectAnswers(playerId: string, gameId: string): Promise<Boolean> {
+    return await this.answerRepository.exists({
       where: {
         playerId: playerId,
         answerStatus: AnswerStatus.Correct,
         player: {
           gameId: gameId,
         },
-      },
-      relations: {
-        player: true,
       },
     });
   }
