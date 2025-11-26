@@ -28,7 +28,6 @@ export class PlayerRepository {
         },
       },
       relations: {
-        answers: true,
         game: true,
       },
     });

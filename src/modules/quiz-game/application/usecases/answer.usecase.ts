@@ -6,6 +6,7 @@ import { AnswerRepository } from '../../infrastructure/answer.repository';
 import { Answer, AnswerStatus } from '../../domain/entity/answer.entity';
 import { GameQuestionRepository } from '../../infrastructure/game-question.repository';
 import { GameStatus } from '../../domain/entity/game.entity';
+import { QUESTION_COUNT } from '../../constants/questions-count';
 
 export class AnswerCommand {
   constructor(
@@ -29,17 +30,17 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
     if (!player) {
       throw DomainExceptionFactory.forbidden();
     }
-
-    console.log(player);
-
-    // Находим игру
-    const game = player.game;//достать игру через репо
-
-    // Получаем общее количество вопросов в игре
-    const totalGameQuestions =
-      await this.gameQuestionRepository.countGameQuestions(player.gameId);
-
-    const answersCount = player.answers.length;
+    // работаю только через экземпляр игры,
+    // нахожу игру
+    const game = await this.gameRepository.findGameByUserId(player.id); //достать игру через репо
+    if (!game) {
+      throw DomainExceptionFactory.forbidden();
+    }
+    const currentPlayer = game.players.find((p) => p.id === player.id);
+    if (!currentPlayer) {
+      throw DomainExceptionFactory.forbidden();
+    }
+    const answersCount = currentPlayer.answers.length;
 
     // 403: If current user is not inside active pair
     if (game.status !== GameStatus.Active) {
@@ -47,7 +48,7 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
     }
 
     // 403: or user is in active pair but has already answered to all questions
-    if (answersCount >= totalGameQuestions) {
+    if (answersCount >= QUESTION_COUNT) {
       throw DomainExceptionFactory.forbidden();
     }
 
@@ -79,7 +80,7 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
     const newAnswersCount = answersCount + 1;
 
     // Проверяем, завершил ли игрок все вопросы
-    if (newAnswersCount === totalGameQuestions) {
+    if (newAnswersCount === QUESTION_COUNT) {
       // Находим другого игрока
       const otherPlayer = game.players.find((p) => p.id !== player.id);
 
@@ -87,7 +88,7 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
         const otherPlayerAnswersCount = otherPlayer.answers.length;
 
         // Если текущий игрок первый завершил
-        if (otherPlayerAnswersCount < totalGameQuestions) {
+        if (otherPlayerAnswersCount < QUESTION_COUNT) {
           // Проверяем, есть ли у него правильные ответы
           const hasCorrectAnswers = player.answers.some(
             (a) => a.answerStatus === AnswerStatus.Correct,
@@ -101,7 +102,7 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
         }
 
         // Если оба игрока завершили - завершаем игру
-        if (otherPlayerAnswersCount === totalGameQuestions) {
+        if (otherPlayerAnswersCount === QUESTION_COUNT) {
           game.finishGame();
           await this.gameRepository.saveGame(game);
         }

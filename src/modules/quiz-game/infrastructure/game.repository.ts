@@ -16,8 +16,8 @@ export class GameRepository {
     return await this.gameRepository.findOne({
       where: { status: GameStatus.PendingSecondPlayer },
       relations: {
-        players: true
-      }
+        players: true,
+      },
     });
   }
 
@@ -25,7 +25,26 @@ export class GameRepository {
     return this.gameRepository.findOne({
       where: {
         id: gameId,
-      }
-    })
+      },
+    });
+  }
+
+  async findGameByUserId(playerId: string): Promise<Game | null> {
+    return this.gameRepository.findOne({
+      where: {
+        players: {
+          id: playerId,
+        },
+        status: GameStatus.Active,
+      },
+      relations: {
+        players: {
+          answers: true,
+        },
+        gameQuestions: {
+          question: true,
+        },
+      },
+    });
   }
 }
