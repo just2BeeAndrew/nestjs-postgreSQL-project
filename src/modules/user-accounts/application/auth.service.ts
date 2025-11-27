@@ -18,11 +18,6 @@ export class AuthService {
     if (!user) {
       return null;
     }
-
-    // if (!user.is_confirmed) {
-    //   return null;
-    // }
-
     const isPasswordValid = await this.bcryptService.comparePassword({
       password: password,
       hash: user.accountData.passwordHash,

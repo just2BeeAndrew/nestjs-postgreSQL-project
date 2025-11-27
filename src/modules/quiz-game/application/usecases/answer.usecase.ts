@@ -32,7 +32,7 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
     }
     // работаю только через экземпляр игры,
     // нахожу игру
-    const game = await this.gameRepository.findGameByUserId(player.id); //достать игру через репо
+    const game = await this.gameRepository.findGameById(player.game.id); //достать игру через репо
     if (!game) {
       throw DomainExceptionFactory.forbidden();
     }
@@ -81,29 +81,43 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
 
     // Проверяем, завершил ли игрок все вопросы
     if (newAnswersCount === QUESTION_COUNT) {
-      // Находим другого игрока
+      console.log('=== Игрок завершил все вопросы ===');
+      console.log('Player ID:', player.id);
+      console.log('New answers count:', newAnswersCount);
+
       const otherPlayer = game.players.find((p) => p.id !== player.id);
+      console.log('Other player ID:', otherPlayer?.id);
 
       if (otherPlayer) {
         const otherPlayerAnswersCount =
           await this.answerRepository.countAnswers(otherPlayer.id, game.id);
 
+        console.log('Other player answers count:', otherPlayerAnswersCount);
+        console.log('QUESTION_COUNT:', QUESTION_COUNT);
+
         // Если текущий игрок первый завершил
         if (otherPlayerAnswersCount < QUESTION_COUNT) {
-          // Проверяем, есть ли у него правильные ответы
-          const hasCorrectAnswers = await this.answerRepository.countCorrectAnswers(player.id, game.id);
+          console.log('Текущий игрок первым завершил, начисляем бонус');
 
-          // Бонусное очко за скорость
+          const hasCorrectAnswers =
+            await this.answerRepository.countCorrectAnswers(player.id, game.id);
+          console.log('Has correct answers:', hasCorrectAnswers);
+
           if (hasCorrectAnswers) {
             player.addScore();
             await this.playerRepository.savePlayer(player);
+            console.log('Бонусное очко начислено');
           }
         }
 
         // Если оба игрока завершили - завершаем игру
         if (otherPlayerAnswersCount === QUESTION_COUNT) {
+          console.log('=== ОБА ИГРОКА ЗАВЕРШИЛИ - ЗАВЕРШАЕМ ИГРУ ===');
           game.finishGame();
           await this.gameRepository.saveGame(game);
+          console.log('Игра завершена, статус:', game.status);
+        } else {
+          console.log('Второй игрок ещё не завершил, ждём');
         }
       }
     }

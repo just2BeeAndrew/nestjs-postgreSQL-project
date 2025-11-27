@@ -25,11 +25,20 @@ export class GameRepository {
     return this.gameRepository.findOne({
       where: {
         id: gameId,
+        status: GameStatus.Active,
+      },
+      relations: {
+        players: {
+          answers: true,
+        },
+        gameQuestions: {
+          question: true,
+        },
       },
     });
   }
 
-  async findGameByUserId(playerId: string): Promise<Game | null> {
+  async findGameByPlayerId(playerId: string): Promise<Game | null> {
     return this.gameRepository.findOne({
       where: {
         players: {

@@ -17,6 +17,7 @@ import { FindGameByIdQuery } from '../application/queries/find-game-by-id.query-
 import { AnswerCommand } from '../application/usecases/answer.usecase';
 import { AnswerInputDto } from './input-dto/answer.input-dto';
 import { MyCurrentQuery } from '../application/queries/my-current.query-handler';
+import { FindGameByIdInputDto } from './input-dto/find-game-by-id.input-dto';
 
 @Controller('pair-game-quiz/pairs')
 export class PairQuizGameController {
@@ -29,14 +30,17 @@ export class PairQuizGameController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async myCurrent(@ExtractUserFromAccessToken() user: AccessContextDto) {
-    return this.queryBus.execute(new MyCurrentQuery(user.id))
+    return this.queryBus.execute(new MyCurrentQuery(user.id));
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async findGameById(@ExtractUserFromAccessToken() user: AccessContextDto, @Param('id') id: string) {
-    return this.queryBus.execute(new FindGameByIdQuery(id, user.id));
+  async findGameById(
+    @ExtractUserFromAccessToken() user: AccessContextDto,
+    @Param() id: FindGameByIdInputDto,
+  ) {
+    return this.queryBus.execute(new FindGameByIdQuery(id.id, user.id));
   }
 
   @Post('connection')

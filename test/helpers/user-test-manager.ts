@@ -35,10 +35,12 @@ export class UserTestManager {
     return usersPromises;
   }
 
-  async loginUser(loginOrEmail: string, password: string) {
+  async loginUser(loginOrEmail: string, password: string): Promise<string> {
+    console.log('login', loginOrEmail, 'password',password);
     const response = await request(this.app.getHttpServer())
       .post('/api/auth/login')
-      .send({ loginOrEmail, password })
+      .set('user-agent', 'test-agent')
+      .send({ loginOrEmail:loginOrEmail, password:password })
       .expect(HttpStatus.OK);
 
     return response.body.accessToken;

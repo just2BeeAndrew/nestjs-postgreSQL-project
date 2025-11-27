@@ -38,11 +38,7 @@ export class ConnectionUseCase implements ICommandHandler<ConnectionCommand> {
     const player = Player.createPlayer(user);
     await this.playersRepository.savePlayer(player);
 
-    // //выбрал 5 случайных вопросов для игры
 
-    // console.log('question', question);
-
-    // console.log('gameQuestion', gameQuestions);
 
     //проверяю наличие игры
     let game = await this.gameRepository.findGamePending();
@@ -60,7 +56,6 @@ export class ConnectionUseCase implements ICommandHandler<ConnectionCommand> {
 
         const gameQuestions = GameQuestion.createGameQuestions(question, game);
         await this.gameQuestionRepository.saveGameQuestion(gameQuestions);
-        console.log(gameQuestions);
 
         game.startGame(gameQuestions);
       }

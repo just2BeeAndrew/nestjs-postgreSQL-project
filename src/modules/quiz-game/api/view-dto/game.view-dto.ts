@@ -27,8 +27,9 @@ export class GameViewDto {
   id: string;
   firstPlayerProgress: PlayerProgressViewDto;
   secondPlayerProgress: PlayerProgressViewDto | null;
-  questions: QuestionsViewDto[];
+  questions: QuestionsViewDto[] | null;
   status: GameStatus;
+  pairCreatedDate: string;
   startGameDate: string;
   finishGameDate: string;
 
@@ -63,11 +64,14 @@ export class GameViewDto {
             score: secondPlayer.score,
           }
         : null,
-      questions: (game.gameQuestions ?? []).map((gq) => ({
-        id: gq.question.id,
-        body: gq.question.body,
-      })),
+      questions: game.gameQuestions && game.gameQuestions.length > 0
+        ? game.gameQuestions.map((gq) => ({
+          id: gq.question.id,
+          body: gq.question.body,
+        }))
+        : null,
       status: game.status,
+      pairCreatedDate: game.createdAt.toISOString(),
       startGameDate: (game.startGameDate as Date)?.toISOString() ?? null,
       finishGameDate: (game.finishGameDate as Date)?.toISOString() ?? null,
     };

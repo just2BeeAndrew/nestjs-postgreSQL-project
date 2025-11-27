@@ -10,13 +10,19 @@ dotenv.config({ path: `${process.cwd()}/env/.env.testing` });
 import { initSettings } from './helpers/init-settings';
 import { QuestionsTestManager } from './helpers/questions-test-manager';
 import { UserTestManager } from './helpers/user-test-manager';
+import { GameTestManager } from './helpers/game-test-manager';
+import { User } from '../src/modules/user-accounts/domain/entities/user.entity';
+import { Game } from '../src/modules/quiz-game/domain/entity/game.entity';
 
 describe('Quiz (e2e)', () => {
   let app: NestApplication;
   let dataSource: DataSource;
   let questionRepository: Repository<Question>;
+  let userRepository: Repository<User>;
+  let gameRepository: Repository<Game>;
   let questionsTestManager: QuestionsTestManager;
   let usersTestManager: UserTestManager;
+  let gameTestManager: GameTestManager;
 
   const credentials = Buffer.from('admin:qwerty').toString('base64');
   const createQuestionDto: CreateQuestionInputDto = {
@@ -30,8 +36,11 @@ describe('Quiz (e2e)', () => {
     await app.init();
     questionsTestManager = new QuestionsTestManager(app);
     usersTestManager = new UserTestManager(app);
+    gameTestManager = new GameTestManager(app);
     dataSource = testingModule.get(DataSource);
     questionRepository = dataSource.getRepository(Question);
+    userRepository = dataSource.getRepository(User)
+    gameRepository = dataSource.getRepository(Game)
     await dataSource.synchronize(false);
   });
 
@@ -103,7 +112,7 @@ describe('Quiz (e2e)', () => {
   });
 
   describe('api/pair-game-quiz/pairs/my-current', () => {
-    it('should return status 400 ', async () => {
+    it('should return status 404 ', async () => {
       const users = await usersTestManager.createSeveralUsers(2);
       console.log('Результат: Создано пользователей:', users.length);
       console.log('User1:', users[0].login);
@@ -122,6 +131,37 @@ describe('Quiz (e2e)', () => {
 
       const userAccessToken2 = await usersTestManager.loginUser(users[1].login, '123456789')
       console.log('Результат: User2 залогинен, токен получен: ', userAccessToken2.substring(0));
+
+      let game = await gameTestManager.connection(userAccessToken1)
+      console.log('Результат: Игрок 1 подключился к игре: ', game);
+
+      game = await gameTestManager.connection(userAccessToken2)
+      console.log('Результат: Игрок 2 подключился к игре: ', game);
+
+      const answer1 = await gameTestManager.answer(userAccessToken1)
+      console.log('Результат: Игрок 1 ответил на все вопросы');
+
+      const answer2 = await gameTestManager.answer(userAccessToken2)
+      console.log('Результат: Игрок 2 ответил на все вопросы');
+
+      const gameInDb = await gameRepository.findOne({
+        where: { id: game.id },
+      });
+      console.log('gameInDb',gameInDb);
+
+      const user1CurrentResponse = await request(app.getHttpServer())
+        .get('/api/pair-game-quiz/pairs/my-current')
+        .set('Authorization', `Bearer ${userAccessToken1}`)
+        .expect(HttpStatus.NOT_FOUND);
+      console.log('Результат: User1 получил статус:', user1CurrentResponse.status);
+      console.log('Body:', user1CurrentResponse.body);
+
+      const user2CurrentResponse = await request(app.getHttpServer())
+        .get('/api/pair-game-quiz/pairs/my-current')
+        .set('Authorization', `Bearer ${userAccessToken2}`)
+        .expect(HttpStatus.NOT_FOUND);
+      console.log('Результат: User2 получил статус:', user2CurrentResponse.status);
+      console.log('Body:', user2CurrentResponse.body);
     });
   });
 });

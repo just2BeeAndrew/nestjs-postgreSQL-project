@@ -14,7 +14,9 @@ export class Game extends BaseEntity {
   @Column({ type: 'text', default: GameStatus.PendingSecondPlayer })
   status: GameStatus;
 
-  @OneToMany(() => GameQuestion, (gameQuestions) => gameQuestions.game)
+  @OneToMany(() => GameQuestion, (gameQuestions) => gameQuestions.game, {
+    cascade: true,
+  })
   gameQuestions: GameQuestion[];
 
   @OneToMany(() => Player, (players) => players.game)
@@ -26,7 +28,7 @@ export class Game extends BaseEntity {
   @Column({ type: 'timestamptz', nullable: true })
   finishGameDate: Date | null;
 
-  static createGame(player: Player) {
+  static createGame(player: Player): Game {
     const game = new Game();
     game.gameQuestions = [];
     game.players = [player];
@@ -38,8 +40,8 @@ export class Game extends BaseEntity {
     this.players.push(player);
   }
 
-  startGame(gameQuestion: GameQuestion[]) {
-    this.gameQuestions = gameQuestion;
+  startGame(gameQuestions: GameQuestion[]) {
+    this.gameQuestions = gameQuestions;
     this.startGameDate = new Date();
     this.status = GameStatus.Active;
   }
