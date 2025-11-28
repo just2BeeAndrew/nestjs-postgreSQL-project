@@ -5,6 +5,9 @@ import { Question } from './question.entity';
 
 @Entity('GameQuestion')
 export class GameQuestion extends BaseEntity {
+  @Column()
+  order: number;
+
   @ManyToOne(() => Game, (game) => game.gameQuestions)
   @JoinColumn({ name: 'gameId' })
   game: Game;
@@ -23,13 +26,14 @@ export class GameQuestion extends BaseEntity {
     questions: Question[],
     game: Game,
   ): GameQuestion[] {
-    return questions.map((q) => {
+    return questions.map((q, index) => {
       const gameQuestions = new GameQuestion();
 
       gameQuestions.question = q;
       gameQuestions.questionId = q.id;
       gameQuestions.game = game;
       gameQuestions.gameId = game.id;
+      gameQuestions.order = index;
 
       return gameQuestions;
     });

@@ -14,7 +14,7 @@ export class GameTestManager {
     return response.body
   }
 
-  async answer(accessToken: string) {
+  async answerSeveral(accessToken: string) {
     for (let i = 0; i < 5; i++) {
       const answerResponse = await request(this.app.getHttpServer())
         .post('/api/pair-game-quiz/pairs/my-current/answers')
@@ -23,6 +23,7 @@ export class GameTestManager {
         .expect(HttpStatus.OK);
       console.log(`Вопрос ${i + 1}: User ответил`);
       console.log('  - Question ID:', answerResponse.body.questionId);
+      console.log('  - Answer:', answerResponse.body.answer);
       console.log('  - Answer Status:', answerResponse.body.answerStatus);
       console.log('  - Added At:', answerResponse.body.addedAt);
     }

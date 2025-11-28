@@ -29,7 +29,7 @@ export class QuestionsTestManager {
 
       const response = await this.createQuestion({
         body: `bodybodyb` + i,
-        correctAnswers: [`correctAnswers` + i],
+        correctAnswers: [`correctAnswers`],
       });
       questions.push(response);
     }

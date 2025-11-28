@@ -28,7 +28,7 @@ export class QuestionRepository {
       .andWhere('q.deletedAt IS NULL')
       .orderBy('RANDOM()')
       .limit(5)
-      .getMany()
+      .getMany();
   }
 
   async softDelete(questionId: string) {

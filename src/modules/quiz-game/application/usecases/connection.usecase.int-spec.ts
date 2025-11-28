@@ -47,4 +47,22 @@ describe('ConnectionUseCase', () => {
     expect(game!.players[0].user.id).toBe(user[0].id);
     expect(game!.status).toBe('PendingSecondPlayer');
   });
+
+  it('should be connected two players', async () => {
+    const  users = await testManager.createSeveralUsers(2);
+    await testManager.createQuestions(10);
+
+    await useCase.execute(new ConnectionCommand(users[0].id));
+    const gameId = await useCase.execute(new ConnectionCommand(users[1].id));
+
+    expect(gameId).toBeDefined();
+
+    const game = await testManager.findGame(gameId);
+    expect(game).toBeDefined();
+    expect(game).not.toBeNull();
+    expect(game!.players).toHaveLength(2);
+    expect(game!.players[0].user.id).toBe(users[0].id);
+    expect(game!.players[1].user.id).toBe(users[1].id);
+    expect(game!.status).toBe('Active');
+  })
 });

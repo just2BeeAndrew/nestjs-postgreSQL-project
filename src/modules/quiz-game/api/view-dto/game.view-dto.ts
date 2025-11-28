@@ -34,7 +34,11 @@ export class GameViewDto {
   finishGameDate: string;
 
   static mapToView(game: Game): GameViewDto {
-    const [firstPlayer, secondPlayer] = game.players;
+    const sortedPlayers = [...game.players].sort(
+      (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
+    );
+
+    const [firstPlayer, secondPlayer] = sortedPlayers;
 
     return {
       id: game.id,
@@ -64,12 +68,15 @@ export class GameViewDto {
             score: secondPlayer.score,
           }
         : null,
-      questions: game.gameQuestions && game.gameQuestions.length > 0
-        ? game.gameQuestions.map((gq) => ({
-          id: gq.question.id,
-          body: gq.question.body,
-        }))
-        : null,
+      questions:
+        game.gameQuestions && game.gameQuestions.length > 0
+          ? [...game.gameQuestions]
+              .sort((a, b) => a.order - b.order) // Сортируем по order
+              .map((gq) => ({
+                id: gq.question.id,
+                body: gq.question.body,
+              }))
+          : null,
       status: game.status,
       pairCreatedDate: game.createdAt.toISOString(),
       startGameDate: (game.startGameDate as Date)?.toISOString() ?? null,

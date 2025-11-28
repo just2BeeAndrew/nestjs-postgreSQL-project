@@ -51,7 +51,6 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
     if (answersCount >= QUESTION_COUNT) {
       throw DomainExceptionFactory.forbidden();
     }
-
     // Определяем правильность ответа
     const currentQuestion = game.gameQuestions[answersCount];
     const answerStatus = currentQuestion.question.correctAnswers.includes(
