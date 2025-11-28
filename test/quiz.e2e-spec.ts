@@ -184,6 +184,45 @@ describe('Quiz (e2e)', () => {
   });
 
   describe('api/pair-game-quiz/pairs/my-current/answers', () => {
-    it('should answer on all questions and count correct answers', async () => {});
+    it('should answer on all questions and count correct answers', async () => {
+      const users = await usersTestManager.createSeveralUsers(2);
+
+      const questions = await questionsTestManager.createSeveralQuestions(10);
+
+      for (const question of questions) {
+        await questionsTestManager.publishQuestion(question.id);
+      }
+
+      const userAccessToken1 = await usersTestManager.loginUser(
+        users[0].login,
+        '123456789',
+      );
+
+      const userAccessToken2 = await usersTestManager.loginUser(
+        users[1].login,
+        '123456789',
+      );
+
+      await gameTestManager.connection(userAccessToken1);
+      await gameTestManager.connection(userAccessToken2);
+
+      await gameTestManager.answer(userAccessToken1, 'correctAnswers');
+
+      await gameTestManager.answer(userAccessToken1, 'correctAnswers');
+
+      await gameTestManager.answer(userAccessToken2, 'correctAnswers');
+
+      await gameTestManager.answer(userAccessToken2, 'correctAnswers');
+
+      await gameTestManager.answer(userAccessToken1, 'correctAnswers');
+
+      await gameTestManager.answer(userAccessToken1, 'correctAnswers');
+
+      await gameTestManager.answer(userAccessToken1, 'correctAnswers');
+
+      const finalGame = await gameTestManager.myCurrent(userAccessToken1);
+
+      expect(finalGame).toBe(5);
+    });
   });
 });

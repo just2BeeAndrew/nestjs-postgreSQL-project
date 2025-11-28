@@ -61,7 +61,6 @@ export class PairQuizGameController {
     @ExtractUserFromAccessToken() user: AccessContextDto,
     @Body() body: AnswerInputDto,
   ) {
-    console.log('body', body);
     return await this.commandBus.execute<AnswerCommand>(
       new AnswerCommand(user.id, body.answer),
     );

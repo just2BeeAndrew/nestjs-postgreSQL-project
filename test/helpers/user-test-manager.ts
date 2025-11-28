@@ -36,7 +36,6 @@ export class UserTestManager {
   }
 
   async loginUser(loginOrEmail: string, password: string): Promise<string> {
-    console.log('login', loginOrEmail, 'password',password);
     const response = await request(this.app.getHttpServer())
       .post('/api/auth/login')
       .set('user-agent', 'test-agent')

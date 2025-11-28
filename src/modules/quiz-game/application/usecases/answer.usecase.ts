@@ -80,43 +80,64 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
 
     // Проверяем, завершил ли игрок все вопросы
     if (newAnswersCount === QUESTION_COUNT) {
-      console.log('=== Игрок завершил все вопросы ===');
-      console.log('Player ID:', player.id);
-      console.log('New answers count:', newAnswersCount);
-
       const otherPlayer = game.players.find((p) => p.id !== player.id);
-      console.log('Other player ID:', otherPlayer?.id);
 
       if (otherPlayer) {
         const otherPlayerAnswersCount =
           await this.answerRepository.countAnswers(otherPlayer.id, game.id);
-
-        console.log('Other player answers count:', otherPlayerAnswersCount);
-        console.log('QUESTION_COUNT:', QUESTION_COUNT);
-
-        // Если текущий игрок первый завершил
-        if (otherPlayerAnswersCount < QUESTION_COUNT) {
-          console.log('Текущий игрок первым завершил, начисляем бонус');
-
-          const hasCorrectAnswers =
-            await this.answerRepository.countCorrectAnswers(player.id, game.id);
-          console.log('Has correct answers:', hasCorrectAnswers);
-
-          if (hasCorrectAnswers) {
-            player.addScore();
-            await this.playerRepository.savePlayer(player);
-            console.log('Бонусное очко начислено');
-          }
-        }
-
         // Если оба игрока завершили - завершаем игру
         if (otherPlayerAnswersCount === QUESTION_COUNT) {
-          console.log('=== ОБА ИГРОКА ЗАВЕРШИЛИ - ЗАВЕРШАЕМ ИГРУ ===');
+          const currentPlayerLastAnswers = savedAnswer.createdAt;
+          const otherPlayerLastAnswers =
+            otherPlayer.answers[QUESTION_COUNT - 1].createdAt;
+          // Если текущий игрок первый завершил
+          if (currentPlayerLastAnswers < otherPlayerLastAnswers) {
+            const hasCorrectAnswers =
+              await this.answerRepository.countCorrectAnswers(
+                player.id,
+                game.id,
+              );
+
+            if (hasCorrectAnswers) {
+              player.addScore();
+              await this.playerRepository.savePlayer(player);
+            }
+          } else if (currentPlayerLastAnswers > otherPlayerLastAnswers) {
+            const hasCorrectAnswers =
+              await this.answerRepository.countCorrectAnswers(
+                otherPlayer.id,
+                game.id,
+              );
+
+            if (hasCorrectAnswers) {
+              otherPlayer.addScore();
+              await this.playerRepository.savePlayer(otherPlayer);
+            }
+          } else {
+            const playerHasCorrectAnswer =
+              await this.answerRepository.countCorrectAnswers(
+                player.id,
+                game.id,
+              );
+
+            const otherHasCorrectAnswer =
+              await this.answerRepository.countCorrectAnswers(
+                otherPlayer.id,
+                game.id,
+              );
+
+            if (playerHasCorrectAnswer) {
+              player.addScore();
+              await this.playerRepository.savePlayer(player);
+            }
+
+            if (otherHasCorrectAnswer) {
+              otherPlayer.addScore();
+              await this.playerRepository.savePlayer(otherPlayer);
+            }
+          }
           game.finishGame();
           await this.gameRepository.saveGame(game);
-          console.log('Игра завершена, статус:', game.status);
-        } else {
-          console.log('Второй игрок ещё не завершил, ждём');
         }
       }
     }
