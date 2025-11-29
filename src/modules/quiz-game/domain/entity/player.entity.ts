@@ -7,7 +7,7 @@ import { Game } from './game.entity';
 export enum GameResultEnum {
   PENDING = 'pending',
   WIN = 'win',
-  LOSE = 'lose',
+  LOSS = 'loss',
   DRAW = 'draw',
 }
 

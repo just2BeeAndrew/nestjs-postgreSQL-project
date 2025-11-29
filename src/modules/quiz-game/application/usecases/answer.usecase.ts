@@ -94,7 +94,7 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
           // Если текущий игрок первый завершил
           if (currentPlayerLastAnswers < otherPlayerLastAnswers) {
             player.setGameResult(GameResultEnum.WIN);
-            otherPlayer.setGameResult(GameResultEnum.LOSE);
+            otherPlayer.setGameResult(GameResultEnum.LOSS);
             const hasCorrectAnswers =
               await this.answerRepository.countCorrectAnswers(
                 player.id,
@@ -107,7 +107,7 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
             await this.playerRepository.savePlayer(player);
             await this.playerRepository.savePlayer(otherPlayer)
           } else if (currentPlayerLastAnswers > otherPlayerLastAnswers) {
-            player.setGameResult(GameResultEnum.LOSE);
+            player.setGameResult(GameResultEnum.LOSS);
             otherPlayer.setGameResult(GameResultEnum.WIN);
             const hasCorrectAnswers =
               await this.answerRepository.countCorrectAnswers(
