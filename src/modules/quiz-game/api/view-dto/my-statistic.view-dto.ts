@@ -6,7 +6,7 @@ export class MyStatisticViewDto {
   lossesCount: number;
   drawsCount: number;
 
-  static mapToView(players: any): Promise<MyStatisticViewDto> {
+  static mapToView(players: any): MyStatisticViewDto {
     return {
       sumScore: Number(players.sumScore),
       avgScore: parseFloat(players.avgScore),
