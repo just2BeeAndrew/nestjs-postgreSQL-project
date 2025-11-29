@@ -7,6 +7,7 @@ import { Answer, AnswerStatus } from '../../domain/entity/answer.entity';
 import { GameQuestionRepository } from '../../infrastructure/game-question.repository';
 import { GameStatus } from '../../domain/entity/game.entity';
 import { QUESTION_COUNT } from '../../constants/questions-count';
+import { GameResultEnum } from '../../domain/entity/player.entity';
 
 export class AnswerCommand {
   constructor(
@@ -92,6 +93,8 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
             otherPlayer.answers[QUESTION_COUNT - 1].createdAt;
           // Если текущий игрок первый завершил
           if (currentPlayerLastAnswers < otherPlayerLastAnswers) {
+            player.setGameResult(GameResultEnum.WIN);
+            otherPlayer.setGameResult(GameResultEnum.LOSE);
             const hasCorrectAnswers =
               await this.answerRepository.countCorrectAnswers(
                 player.id,
@@ -100,9 +103,12 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
 
             if (hasCorrectAnswers) {
               player.addScore();
-              await this.playerRepository.savePlayer(player);
             }
+            await this.playerRepository.savePlayer(player);
+            await this.playerRepository.savePlayer(otherPlayer)
           } else if (currentPlayerLastAnswers > otherPlayerLastAnswers) {
+            player.setGameResult(GameResultEnum.LOSE);
+            otherPlayer.setGameResult(GameResultEnum.WIN);
             const hasCorrectAnswers =
               await this.answerRepository.countCorrectAnswers(
                 otherPlayer.id,
@@ -111,9 +117,12 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
 
             if (hasCorrectAnswers) {
               otherPlayer.addScore();
-              await this.playerRepository.savePlayer(otherPlayer);
             }
+            await this.playerRepository.savePlayer(player);
+            await this.playerRepository.savePlayer(otherPlayer)
           } else {
+            player.setGameResult(GameResultEnum.DRAW);
+            otherPlayer.setGameResult(GameResultEnum.DRAW);
             const playerHasCorrectAnswer =
               await this.answerRepository.countCorrectAnswers(
                 player.id,
@@ -128,13 +137,13 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
 
             if (playerHasCorrectAnswer) {
               player.addScore();
-              await this.playerRepository.savePlayer(player);
             }
 
             if (otherHasCorrectAnswer) {
               otherPlayer.addScore();
-              await this.playerRepository.savePlayer(otherPlayer);
             }
+            await this.playerRepository.savePlayer(player);
+            await this.playerRepository.savePlayer(otherPlayer)
           }
           game.finishGame();
           await this.gameRepository.saveGame(game);

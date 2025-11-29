@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../core/guards/bearer/jwt-auth.guard';
@@ -18,6 +19,9 @@ import { AnswerCommand } from '../application/usecases/answer.usecase';
 import { AnswerInputDto } from './input-dto/answer.input-dto';
 import { MyCurrentQuery } from '../application/queries/my-current.query-handler';
 import { FindGameByIdInputDto } from './input-dto/find-game-by-id.input-dto';
+import { MyQuery } from '../application/queries/my.query-handler';
+import { MyQueryParams } from './input-dto/my-query-params.input-dto';
+import { MyStatisticQuery } from '../application/queries/my-statistic.query-handler';
 
 @Controller('pair-game-quiz/pairs')
 export class PairQuizGameController {
@@ -25,6 +29,23 @@ export class PairQuizGameController {
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
   ) {}
+
+  @Get('my')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async my(
+    @ExtractUserFromAccessToken() user: AccessContextDto,
+    @Query() query: MyQueryParams,
+  ) {
+    return this.queryBus.execute(new MyQuery(user.id, query));
+  }
+
+  @Get('my-statistic')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async myStatistic(@ExtractUserFromAccessToken() user: AccessContextDto) {
+    return this.queryBus.execute(new MyStatisticQuery(user.id))
+  }
 
   @Get('my-current')
   @UseGuards(JwtAuthGuard)

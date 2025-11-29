@@ -26,6 +26,8 @@ import { GameQuestionRepository } from './infrastructure/game-question.repositor
 import { MyCurrentQueryHandler } from './application/queries/my-current.query-handler';
 import { UserAccountsModule } from '../user-accounts/user-accounts.module';
 import { CqrsModule } from '@nestjs/cqrs';
+import { MyQueryHandler } from './application/queries/my.query-handler';
+import { MyStatisticQueryHandler } from './application/queries/my-statistic.query-handler';
 
 const useCases = [
   AnswerUseCase,
@@ -40,7 +42,9 @@ const queries = [
   FindAllQuestionsQueryHandler,
   FindGameByIdQueryHandler,
   FindQuestionByIdQueryHandler,
+  MyQueryHandler,
   MyCurrentQueryHandler,
+  MyStatisticQueryHandler,
 ];
 
 @Module({

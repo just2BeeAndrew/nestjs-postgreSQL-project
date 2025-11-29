@@ -4,10 +4,20 @@ import { BaseEntity } from '../../../../core/entities/base.entity';
 import { Answer } from './answer.entity';
 import { Game } from './game.entity';
 
+export enum GameResultEnum {
+  PENDING = 'pending',
+  WIN = 'win',
+  LOSE = 'lose',
+  DRAW = 'draw',
+}
+
 @Entity({ name: 'Player' })
 export class Player extends BaseEntity {
   @Column({ type: 'int', default: 0 })
   score: number;
+
+  @Column({ type: 'text', default: GameResultEnum.PENDING })
+  gameResult: GameResultEnum;
 
   @OneToMany(() => Answer, (answers) => answers.player)
   answers: Answer[];
@@ -38,5 +48,9 @@ export class Player extends BaseEntity {
 
   addScore() {
     this.score += 1;
+  }
+
+  setGameResult(gameResult: GameResultEnum) {
+    this.gameResult = gameResult;
   }
 }
