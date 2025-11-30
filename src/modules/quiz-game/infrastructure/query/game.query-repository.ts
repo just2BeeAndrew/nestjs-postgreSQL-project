@@ -81,7 +81,6 @@ export class GameQueryRepository {
     };
 
     const sortField = sortByMapper[query.sortBy] || `g.${query.sortBy}`;
-    console.log(sortField, sortDirection);
 
     const baseQb = this.gameRepository
       .createQueryBuilder('g')

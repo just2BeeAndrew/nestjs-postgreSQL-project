@@ -40,15 +40,15 @@ export class GameViewDto {
 
     const [firstPlayer, secondPlayer] = sortedPlayers;
 
-
-
     return {
       id: game.id,
       firstPlayerProgress: {
-        answers: (firstPlayer.answers ?? []).map((a) => ({
-          questionId: a.questionId,
-          answerStatus: a.answerStatus,
+        answers: (firstPlayer.answers ?? [])
+          .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+          .map((a) => ({
           addedAt: a.createdAt.toISOString(),
+          answerStatus: a.answerStatus,
+          questionId: a.questionId,
         })),
         player: {
           id: firstPlayer.user.id,
@@ -58,10 +58,12 @@ export class GameViewDto {
       },
       secondPlayerProgress: secondPlayer
         ? {
-            answers: (secondPlayer.answers ?? []).map((a) => ({
-              questionId: a.questionId,
-              answerStatus: a.answerStatus,
+            answers: (secondPlayer.answers ?? [])
+              .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+              .map((a) => ({
               addedAt: a.createdAt.toISOString(),
+              answerStatus: a.answerStatus,
+              questionId: a.questionId,
             })),
             player: {
               id: secondPlayer.user.id,
