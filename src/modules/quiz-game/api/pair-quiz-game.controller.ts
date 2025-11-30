@@ -22,6 +22,8 @@ import { FindGameByIdInputDto } from './input-dto/find-game-by-id.input-dto';
 import { MyQuery } from '../application/queries/my.query-handler';
 import { MyQueryParams } from './input-dto/my-query-params.input-dto';
 import { MyStatisticQuery } from '../application/queries/my-statistic.query-handler';
+import { TopQueryParams } from './input-dto/top-query-params.input-dto';
+import { TopQuery } from '../application/queries/top.query-handler';
 
 @Controller('pair-game-quiz')
 export class PairQuizGameController {
@@ -29,6 +31,13 @@ export class PairQuizGameController {
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
   ) {}
+
+  @Get('users/top')
+  @HttpCode(HttpStatus.OK)
+  async top(@Query() query: TopQueryParams) {
+    console.log(query);
+    return await this.queryBus.execute(new TopQuery(query));
+  }
 
   @Get('pairs/my')
   @UseGuards(JwtAuthGuard)
