@@ -4,7 +4,10 @@ import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { GameViewDto } from '../../api/view-dto/game.view-dto';
 import { Player } from '../../domain/entity/player.entity';
-import { MyQueryParams } from '../../api/input-dto/my-query-params.input-dto';
+import {
+  MyQueryParams,
+  MySortBy,
+} from '../../api/input-dto/my-query-params.input-dto';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 
 @Injectable()
@@ -72,30 +75,51 @@ export class GameQueryRepository {
   ): Promise<PaginatedViewDto<GameViewDto[]>> {
     const sortDirection = query.sortDirection.toUpperCase() as 'ASC' | 'DESC';
 
-    const queryBuilder = this.gameRepository
+    const sortByMapper: Record<MySortBy, string> = {
+      [MySortBy.STATUS]: 'g.status',
+      [MySortBy.PAIR_CREATED_DATE]: 'g.createdAt',
+    };
+
+    const sortField = sortByMapper[query.sortBy] || `g.${query.sortBy}`;
+
+    const baseQb = this.gameRepository
       .createQueryBuilder('g')
-      .where((qb) => {
-        const subQuery = qb
-          .subQuery()
-          .select('player.gameId')
-          .from('Player', 'player')
-          .where('player.userId = :userId', { userId })
-          .getQuery();
-        return `g.id IN ${subQuery}`;
+      .innerJoin('g.players', 'me', 'me.userId = :userId', { userId });
+
+    const totalCount = await baseQb.clone().getCount();
+
+    // 2. Берём только id игр с пагинацией
+    const idsRaw = await baseQb
+      .clone()
+      .select('g.id', 'id')
+      .orderBy(sortField, sortDirection)
+      .addOrderBy('g.createdAt', 'DESC')
+      .limit(query.pageSize)
+      .offset(query.calculateSkip())
+      .getRawMany();
+
+    const ids = idsRaw.map((r) => r.id);
+    if (!ids.length) {
+      return PaginatedViewDto.mapToView({
+        items: [],
+        totalCount,
+        page: query.pageNumber,
+        size: query.pageSize,
       });
+    }
 
-    const totalCount = await queryBuilder.clone().getCount();
-
-    const games = await queryBuilder
+    // 3. Подтягиваем игры с полными связями по этим id
+    const games = await this.gameRepository
+      .createQueryBuilder('g')
+      .where('g.id IN (:...ids)', { ids })
       .leftJoinAndSelect('g.players', 'p')
       .leftJoinAndSelect('p.user', 'u')
       .leftJoinAndSelect('u.accountData', 'ad')
       .leftJoinAndSelect('p.answers', 'a')
       .leftJoinAndSelect('g.gameQuestions', 'gq')
       .leftJoinAndSelect('gq.question', 'q')
-      .orderBy(`g.${query.sortBy}`, sortDirection)
-      .limit(query.pageSize)
-      .offset(query.calculateSkip())
+      .orderBy(sortField, sortDirection)
+      .addOrderBy('g.createdAt', 'DESC')
       .getMany();
 
     const items = games.map((game) => GameViewDto.mapToView(game));

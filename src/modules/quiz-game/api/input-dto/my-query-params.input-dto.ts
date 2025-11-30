@@ -1,7 +1,8 @@
 import { IsEnum } from 'class-validator';
 import { BaseQueryParams } from '../../../../core/dto/base.query-params.input-dto';
-enum MySortBy {
+export enum MySortBy {
   PAIR_CREATED_DATE = 'pairCreatedDate',
+  STATUS = 'status',
 }
 export class MyQueryParams extends BaseQueryParams{
   @IsEnum(MySortBy)

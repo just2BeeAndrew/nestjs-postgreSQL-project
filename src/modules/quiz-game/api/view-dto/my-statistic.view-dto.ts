@@ -1,6 +1,6 @@
 export class MyStatisticViewDto {
   sumScore: number;
-  avgScore: number;
+  avgScores: number;
   gamesCount: number;
   winsCount: number;
   lossesCount: number;
@@ -9,7 +9,7 @@ export class MyStatisticViewDto {
   static mapToView(players: any): MyStatisticViewDto {
     return {
       sumScore: Number(players.sumScore),
-      avgScore: parseFloat(players.avgScore),
+      avgScores: parseFloat(players.avgScores),
       gamesCount: Number(players.gamesCount),
       winsCount: Number(players.winsCount),
       lossesCount: Number(players.lossesCount),

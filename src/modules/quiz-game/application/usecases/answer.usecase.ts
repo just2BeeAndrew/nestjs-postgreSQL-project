@@ -91,60 +91,39 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
           const currentPlayerLastAnswers = savedAnswer.createdAt;
           const otherPlayerLastAnswers =
             otherPlayer.answers[QUESTION_COUNT - 1].createdAt;
-          // Если текущий игрок первый завершил
-          if (currentPlayerLastAnswers < otherPlayerLastAnswers) {
+
+          const currentPlayerHasCorrectAnswers =
+            await this.answerRepository.countCorrectAnswers(player.id, game.id);
+
+          const otherPlayerHasCorrectAnswers =
+            await this.answerRepository.countCorrectAnswers(
+              otherPlayer.id,
+              game.id,
+            );
+
+          if (
+            currentPlayerLastAnswers < otherPlayerLastAnswers &&
+            currentPlayerHasCorrectAnswers
+          ) {
+            player.addScore();
+          } else if (currentPlayerLastAnswers > otherPlayerLastAnswers && otherPlayerHasCorrectAnswers) {
+              otherPlayer.addScore();
+          }
+
+          if (player.score > otherPlayer.score) {
             player.setGameResult(GameResultEnum.WIN);
             otherPlayer.setGameResult(GameResultEnum.LOSS);
-            const hasCorrectAnswers =
-              await this.answerRepository.countCorrectAnswers(
-                player.id,
-                game.id,
-              );
-
-            if (hasCorrectAnswers) {
-              player.addScore();
-            }
-            await this.playerRepository.savePlayer(player);
-            await this.playerRepository.savePlayer(otherPlayer)
-          } else if (currentPlayerLastAnswers > otherPlayerLastAnswers) {
+          } else if (player.score < otherPlayer.score) {
             player.setGameResult(GameResultEnum.LOSS);
             otherPlayer.setGameResult(GameResultEnum.WIN);
-            const hasCorrectAnswers =
-              await this.answerRepository.countCorrectAnswers(
-                otherPlayer.id,
-                game.id,
-              );
-
-            if (hasCorrectAnswers) {
-              otherPlayer.addScore();
-            }
-            await this.playerRepository.savePlayer(player);
-            await this.playerRepository.savePlayer(otherPlayer)
           } else {
             player.setGameResult(GameResultEnum.DRAW);
             otherPlayer.setGameResult(GameResultEnum.DRAW);
-            const playerHasCorrectAnswer =
-              await this.answerRepository.countCorrectAnswers(
-                player.id,
-                game.id,
-              );
-
-            const otherHasCorrectAnswer =
-              await this.answerRepository.countCorrectAnswers(
-                otherPlayer.id,
-                game.id,
-              );
-
-            if (playerHasCorrectAnswer) {
-              player.addScore();
-            }
-
-            if (otherHasCorrectAnswer) {
-              otherPlayer.addScore();
-            }
-            await this.playerRepository.savePlayer(player);
-            await this.playerRepository.savePlayer(otherPlayer)
           }
+
+          await this.playerRepository.savePlayer(player);
+          await this.playerRepository.savePlayer(otherPlayer);
+
           game.finishGame();
           await this.gameRepository.saveGame(game);
         }

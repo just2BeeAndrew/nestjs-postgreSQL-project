@@ -51,7 +51,7 @@ export default new DataSource({
     Session,
     User,
   ],
-  migrations: [join(__dirname, '..', 'migrations', '*.{ts,js}')],
+  migrations: [join(process.cwd(), 'migrations', '*.{ts,js}')],
   synchronize: false,
   logging: process.env.DB_LOGGING === 'true',
 });

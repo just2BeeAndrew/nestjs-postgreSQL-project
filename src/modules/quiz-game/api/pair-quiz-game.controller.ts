@@ -23,14 +23,14 @@ import { MyQuery } from '../application/queries/my.query-handler';
 import { MyQueryParams } from './input-dto/my-query-params.input-dto';
 import { MyStatisticQuery } from '../application/queries/my-statistic.query-handler';
 
-@Controller('pair-game-quiz/pairs')
+@Controller('pair-game-quiz')
 export class PairQuizGameController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
   ) {}
 
-  @Get('my')
+  @Get('pairs/my')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async my(
@@ -40,21 +40,21 @@ export class PairQuizGameController {
     return this.queryBus.execute(new MyQuery(user.id, query));
   }
 
-  @Get('my-statistic')
+  @Get('users/my-statistic')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async myStatistic(@ExtractUserFromAccessToken() user: AccessContextDto) {
     return this.queryBus.execute(new MyStatisticQuery(user.id))
   }
 
-  @Get('my-current')
+  @Get('pairs/my-current')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async myCurrent(@ExtractUserFromAccessToken() user: AccessContextDto) {
     return this.queryBus.execute(new MyCurrentQuery(user.id));
   }
 
-  @Get(':id')
+  @Get('pairs/:id')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async findGameById(
@@ -64,7 +64,7 @@ export class PairQuizGameController {
     return this.queryBus.execute(new FindGameByIdQuery(id.id, user.id));
   }
 
-  @Post('connection')
+  @Post('pairs/connection')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async connection(@ExtractUserFromAccessToken() user: AccessContextDto) {
@@ -75,7 +75,7 @@ export class PairQuizGameController {
     return this.queryBus.execute(new FindGameByIdQuery(gameId, user.id));
   }
 
-  @Post('my-current/answers')
+  @Post('pairs/my-current/answers')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async answers(

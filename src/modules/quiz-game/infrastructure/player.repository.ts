@@ -53,7 +53,7 @@ export class PlayerRepository {
       .createQueryBuilder('p')
       .leftJoin('p.game', 'g')
       .select('COALESCE(SUM(p.score), 0)', 'sumScore')
-      .addSelect('COALESCE(ROUND(AVG(p.score), 2), 0)', 'avgScore')
+      .addSelect('COALESCE(ROUND(AVG(p.score), 2), 0)', 'avgScores')
       .addSelect('COUNT(p.id)', 'gamesCount')
       .addSelect('COALESCE(SUM(CASE WHEN p.gameResult = :win THEN 1 ELSE 0 END), 0)', 'winsCount')
       .addSelect('COALESCE(SUM(CASE WHEN p.gameResult = :loss THEN 1 ELSE 0 END), 0)', 'lossesCount')

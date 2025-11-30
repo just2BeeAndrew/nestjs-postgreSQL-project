@@ -225,4 +225,68 @@ describe('Quiz (e2e)', () => {
       expect(finalGame).toBe(5);
     });
   });
+
+  describe('api/pair-game-quiz/pairs/my', () => {
+    it('should return 4 games and sort by status asc', async () => {
+      const users = await usersTestManager.createSeveralUsers(2);
+
+      const questions = await questionsTestManager.createSeveralQuestions(10);
+
+      for (const question of questions) {
+        await questionsTestManager.publishQuestion(question.id);
+      }
+
+      const userAccessToken1 = await usersTestManager.loginUser(
+        users[0].login,
+        '123456789',
+      );
+
+      const userAccessToken2 = await usersTestManager.loginUser(
+        users[1].login,
+        '123456789',
+      );
+
+      let game = await gameTestManager.connection(userAccessToken1);
+      game = await gameTestManager.connection(userAccessToken2);
+      await gameTestManager.answerSeveral(userAccessToken1);
+      await gameTestManager.answerSeveral(userAccessToken2);
+
+      game = await gameTestManager.connection(userAccessToken1);
+      game = await gameTestManager.connection(userAccessToken2);
+      await gameTestManager.answerSeveral(userAccessToken1);
+      await gameTestManager.answerSeveral(userAccessToken2);
+
+      game = await gameTestManager.connection(userAccessToken1);
+      game = await gameTestManager.connection(userAccessToken2);
+      await gameTestManager.answerSeveral(userAccessToken1);
+      await gameTestManager.answerSeveral(userAccessToken2);
+
+      game = await gameTestManager.connection(userAccessToken1);
+      game = await gameTestManager.connection(userAccessToken2);
+      await gameTestManager.answer(userAccessToken1, 'correctAnswers');
+      await gameTestManager.answer(userAccessToken1, 'correctAnswers');
+
+      const res = await request(app.getHttpServer())
+        .get('/api/pair-game-quiz/pairs/my')
+        .set('Authorization', `Bearer ${userAccessToken1}`)
+        .query({ sortBy: 'status', sortDirection: 'asc' })
+        .expect(200);
+
+      expect(res.body.totalCount).toBe(4);
+      expect(res.body.items).toHaveLength(4);
+
+      expect(res.body.items[0].status).toBe('Active');
+
+      expect(res.body.items[1].status).toBe('Finished');
+      expect(res.body.items[2].status).toBe('Finished');
+      expect(res.body.items[3].status).toBe('Finished');
+
+      const finished = res.body.items.slice(1);
+      const timestamps = finished.map(g => new Date(g.pairCreatedDate).getTime());
+      expect(timestamps[0]).toBeGreaterThan(timestamps[1]);
+      expect(timestamps[1]).toBeGreaterThan(timestamps[2]);
+
+    })
+
+  })
 });

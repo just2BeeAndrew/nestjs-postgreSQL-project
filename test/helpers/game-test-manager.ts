@@ -28,11 +28,6 @@ export class GameTestManager {
         .set('Authorization', `Bearer ${accessToken}`)
         .send({ answer: `correctAnswers` })
         .expect(HttpStatus.OK);
-      console.log(`Вопрос ${i + 1}: User ответил`);
-      console.log('  - Question ID:', answerResponse.body.questionId);
-      console.log('  - Answer:', answerResponse.body.answer);
-      console.log('  - Answer Status:', answerResponse.body.answerStatus);
-      console.log('  - Added At:', answerResponse.body.addedAt);
     }
   }
 
@@ -41,7 +36,6 @@ export class GameTestManager {
       .get('/api/pair-game-quiz/pairs/my-current')
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(HttpStatus.OK);
-    console.log('score', response.body.firstPlayerProgress.score);
 
     return response.body.firstPlayerProgress.score;
   }
