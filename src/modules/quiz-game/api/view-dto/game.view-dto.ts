@@ -40,6 +40,8 @@ export class GameViewDto {
 
     const [firstPlayer, secondPlayer] = sortedPlayers;
 
+
+
     return {
       id: game.id,
       firstPlayerProgress: {

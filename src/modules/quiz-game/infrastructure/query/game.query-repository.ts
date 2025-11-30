@@ -81,6 +81,7 @@ export class GameQueryRepository {
     };
 
     const sortField = sortByMapper[query.sortBy] || `g.${query.sortBy}`;
+    console.log(sortField, sortDirection);
 
     const baseQb = this.gameRepository
       .createQueryBuilder('g')
@@ -88,7 +89,6 @@ export class GameQueryRepository {
 
     const totalCount = await baseQb.clone().getCount();
 
-    // 2. Берём только id игр с пагинацией
     const idsRaw = await baseQb
       .clone()
       .select('g.id', 'id')
@@ -108,7 +108,6 @@ export class GameQueryRepository {
       });
     }
 
-    // 3. Подтягиваем игры с полными связями по этим id
     const games = await this.gameRepository
       .createQueryBuilder('g')
       .where('g.id IN (:...ids)', { ids })
