@@ -28,6 +28,7 @@ import { UserAccountsModule } from '../user-accounts/user-accounts.module';
 import { CqrsModule } from '@nestjs/cqrs';
 import { MyQueryHandler } from './application/queries/my.query-handler';
 import { MyStatisticQueryHandler } from './application/queries/my-statistic.query-handler';
+import { TopQueryHandler } from './application/queries/top.query-handler';
 
 const useCases = [
   AnswerUseCase,
@@ -45,6 +46,7 @@ const queries = [
   MyQueryHandler,
   MyCurrentQueryHandler,
   MyStatisticQueryHandler,
+  TopQueryHandler,
 ];
 
 @Module({
