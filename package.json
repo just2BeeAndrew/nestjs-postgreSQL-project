@@ -19,7 +19,7 @@
     "test:debug": "cross-env NODE_ENV=testing node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "cross-env NODE_ENV=testing jest --config ./test/jest-e2e.json",
     "test:int": "cross-env NODE_ENV=testing jest --config ./test/jest-int.json",
-    "migration:generate": "cross-env NODE_ENV=migration pnpm migration:run && cross-env NODE_ENV=development typeorm-ts-node-commonjs migration:generate -d ./typeorm.config.ts" ,
+    "migration:generate": "cross-env NODE_ENV=migration pnpm migration:run && cross-env NODE_ENV=development typeorm-ts-node-commonjs migration:generate -d ./typeorm.config.ts",
     "migration:run": "cross-env NODE_ENV=migration typeorm-ts-node-commonjs migration:run -d ./typeorm.config.ts",
     "migration:revert": "cross-env NODE_ENV=migration typeorm-ts-node-commonjs migration:revert -d ./typeorm.config.ts"
   },
@@ -33,6 +33,7 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/schedule": "^6.0.1",
     "@nestjs/swagger": "^11.2.0",
     "@nestjs/throttler": "^6.4.0",
     "@nestjs/typeorm": "^11.0.0",

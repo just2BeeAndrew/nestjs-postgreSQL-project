@@ -39,20 +39,6 @@ export class PlayerRepository {
     });
   }
 
-  async findEmptyPlayer(userId: string) {
-    return await this.playerRepository.findOne({
-      where: {
-        userId: userId,
-        game: {
-          status: GameStatus.Active,
-        },
-      },
-      relations: {
-        game: true,
-      },
-    });
-  }
-
   async myStatistic(userId: string) {
     const players = await this.playerRepository
       .createQueryBuilder('p')

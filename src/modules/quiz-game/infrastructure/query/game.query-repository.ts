@@ -41,7 +41,7 @@ export class GameQueryRepository {
 
   async findUnfinishedGame(userId: string): Promise<GameViewDto | null> {
     const game = await this.gameRepository
-      .createQueryBuilder('game')
+      .createQueryBuilder('g')
       .leftJoinAndSelect('g.players', 'p')
       .leftJoinAndSelect('p.user', 'u')
       .leftJoinAndSelect('u.accountData', 'ad')
@@ -56,7 +56,7 @@ export class GameQueryRepository {
           .from('Player', 'p')
           .where('p.userId = :userId', { userId })
           .getQuery();
-        return `game.id IN ${subQuery}`;
+        return `g.id IN ${subQuery}`;
       })
       .orderBy('p.createdAt', 'ASC')
       .addOrderBy('a.createdAt', 'ASC')

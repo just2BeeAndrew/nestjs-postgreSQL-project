@@ -29,6 +29,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { MyQueryHandler } from './application/queries/my.query-handler';
 import { MyStatisticQueryHandler } from './application/queries/my-statistic.query-handler';
 import { TopQueryHandler } from './application/queries/top.query-handler';
+import { ScheduleModule } from '@nestjs/schedule';
 
 const useCases = [
   AnswerUseCase,
@@ -54,6 +55,7 @@ const queries = [
     UserAccountsModule,
     CqrsModule,
     TypeOrmModule.forFeature([Answer, Game, GameQuestion, Player, Question]),
+    ScheduleModule.forRoot()
   ],
   controllers: [PairQuizGameController, QuizQuestionsSuperAdminController],
   providers: [

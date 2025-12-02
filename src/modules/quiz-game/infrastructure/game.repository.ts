@@ -37,23 +37,4 @@ export class GameRepository {
       },
     });
   }
-
-  async findGameByPlayerId(playerId: string): Promise<Game | null> {
-    return this.gameRepository.findOne({
-      where: {
-        players: {
-          id: playerId,
-        },
-        status: GameStatus.Active,
-      },
-      relations: {
-        players: {
-          answers: true,
-        },
-        gameQuestions: {
-          question: true,
-        },
-      },
-    });
-  }
 }
